@@ -14,5 +14,8 @@ else:
     st.caption(f"{when} · {request['model']}")
     st.subheader(config.COPY_QUESTION_LABEL)
     st.write(request["situation"])
-    render_answers(request)
-    render_copy_box(request["situation"], request)
+    if request["willingness"] is None:  # a fallback request: no answers were given
+        st.info(config.FALLBACK_MESSAGE)
+    else:
+        render_answers(request)
+        render_copy_box(request["situation"], request)

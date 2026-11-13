@@ -47,7 +47,7 @@ APP_TITLE = "Sacred Self"
 APP_SUBTITLE = "Share a situation or issue. See it through four perspectives."
 INPUT_LABEL = "What is on your mind?"
 INPUT_PLACEHOLDER = (
-    "For example: My husband doesn't appreciate anything I do for the family."
+    "My child keeps making the same mistakes despite repeated corrections."
 )
 INPUT_HEIGHT = 150
 SUBMIT_LABEL = "Show me four perspectives"
@@ -56,15 +56,17 @@ DISCLAIMER = (
     "This is a reflection tool, not medical, psychological, legal or crisis support. "
     "If you are in danger or in crisis, contact local emergency services or a trusted person."
 )
+FALLBACK_MESSAGE = "I can't help with it."
+HISTORY_FALLBACK_LABEL = "Out of scope"
 HISTORY_HEADING = "History"
 HISTORY_EMPTY = "No saved requests yet."
 HISTORY_SNIPPET_CHARS = 90
 HISTORY_BOX_HEIGHT = 420
 BACK_LABEL = "← Back"
 DETAIL_NOT_FOUND = "That request was not found. Go back and pick one from the history."
-COPY_HEADING ="Copy question and answers"
+COPY_HEADING = "Copy question and answers"
 COPY_QUESTION_LABEL = "Question"
-SAVE_NOTICE ="Your message and the answers are saved to help improve this app."
+SAVE_NOTICE = "Your message and the answers are saved to help improve this app."
 
 # --- Error messages ---
 ERROR_EMPTY_INPUT = "Please describe your situation first."

@@ -65,7 +65,7 @@ def _connect():
 
 def save_request(
     situation: str,
-    answers: dict[str, str],
+    answers: dict[str, str] | None,
     model: str,
     input_tokens: int | None,
     output_tokens: int | None,
@@ -73,6 +73,8 @@ def save_request(
 ) -> None:
     """Store one request. `answers` maps each ANSWER_COLUMNS name to its text.
 
+    answers is None for a fallback request (not a personal issue): the answer columns stay
+    NULL, and a row with no `willingness` is how a fallback is recognised.
     cost_usd is None when the model has no price data.
     """
     cols = ["created_at", "model", "situation", *ANSWER_COLUMNS,
@@ -84,7 +86,7 @@ def save_request(
                 datetime.now(timezone.utc).isoformat(),
                 model,
                 situation,
-                *(answers[c] for c in ANSWER_COLUMNS),
+                *((answers[c] if answers else None) for c in ANSWER_COLUMNS),
                 input_tokens,
                 output_tokens,
                 cost_usd,
@@ -93,12 +95,13 @@ def save_request(
 
 
 def list_requests() -> list[dict]:
-    """All saved requests, newest first: id, created_at, situation, cost_usd."""
+    """All saved requests, newest first: id, created_at, situation, cost_usd, is_fallback."""
     if not Path(config.DB_PATH).exists():
         return []
     with _connect() as conn:
         rows = conn.execute(
-            "SELECT id, created_at, situation, cost_usd FROM requests ORDER BY id DESC"
+            "SELECT id, created_at, situation, cost_usd, willingness IS NULL AS is_fallback"
+            " FROM requests ORDER BY id DESC"
         ).fetchall()
     return [dict(r) for r in rows]
 

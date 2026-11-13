@@ -1,5 +1,6 @@
 import logging
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
@@ -33,6 +34,14 @@ class FourPerspectives(BaseModel):
 assert [p.key for p in PERSPECTIVES] == list(FourPerspectives.model_fields)[1:]
 
 
+class Fallback(BaseModel):
+    """Use ONLY when the message is not about the user's own personal situation, feelings,
+    relationships, work or life decisions (general knowledge, facts, coding, news, trivia,
+    requests to write or translate, questions about the AI). Never use it for a crisis message."""
+
+    message: Literal["FALLBACK"]
+
+
 def answers_dict(output: FourPerspectives) -> dict[str, str]:
     """Plain {column: text} form of an answer, used for saving and for display."""
     return {
@@ -46,15 +55,16 @@ class UserError(Exception):
 
 
 @lru_cache
-def get_agent() -> Agent[None, FourPerspectives]:
+def get_agent() -> Agent[None, FourPerspectives | Fallback]:
     return Agent(
         config.MODEL_NAME,
-        output_type=FourPerspectives,
+        output_type=[FourPerspectives, Fallback],
         system_prompt=build_system_prompt(),
     )
 
 
-def get_perspectives(situation: str) -> FourPerspectives:
+def get_perspectives(situation: str) -> FourPerspectives | None:
+    """The four answers, or None when the model returned FALLBACK (not a personal issue)."""
     text = situation.strip()
     if not text:
         raise UserError(config.ERROR_EMPTY_INPUT)
@@ -98,10 +108,11 @@ def get_perspectives(situation: str) -> FourPerspectives:
         f"[usage] in={usage.input_tokens} out={usage.output_tokens} est_cost={cost_text}"
     )
 
+    output = result.output if isinstance(result.output, FourPerspectives) else None
     try:
         db.save_request(
             text,
-            answers_dict(result.output),
+            answers_dict(output) if output else None,
             config.MODEL_NAME,
             usage.input_tokens,
             usage.output_tokens,
@@ -109,4 +120,4 @@ def get_perspectives(situation: str) -> FourPerspectives:
         )
     except Exception:  # never hide the answers because saving failed
         logger.exception("Could not save request")
-    return result.output
+    return output

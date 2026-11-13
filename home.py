@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 # Keeps the last answer across Streamlit reruns, so interacting with the page
 # does not wipe it.
 RESULT_KEY = "result"
+FALLBACK_KEY = "fallback"
 
 st.title(config.APP_TITLE)
 st.caption(config.APP_SUBTITLE)
@@ -29,9 +30,14 @@ if submitted:
     # Drop the previous answer so the page never shows stale output next to a
     # failed attempt.
     st.session_state.pop(RESULT_KEY, None)
+    st.session_state.pop(FALLBACK_KEY, None)
     try:
         with st.spinner(config.SPINNER_TEXT):
-            st.session_state[RESULT_KEY] = answers_dict(get_perspectives(situation))
+            output = get_perspectives(situation)
+        if output is None:  # the model returned FALLBACK: not a personal issue
+            st.session_state[FALLBACK_KEY] = True
+        else:
+            st.session_state[RESULT_KEY] = answers_dict(output)
     except UserError as e:
         st.warning(str(e))
     except Exception:
@@ -39,7 +45,9 @@ if submitted:
         st.error(config.ERROR_GENERIC)
 
 answers = st.session_state.get(RESULT_KEY)
-if answers is not None:
+if st.session_state.get(FALLBACK_KEY):
+    st.info(config.FALLBACK_MESSAGE)
+elif answers is not None:
     render_answers(answers)
 
 st.caption(config.DISCLAIMER)
@@ -67,4 +75,6 @@ else:
             ):
                 st.session_state["selected_id"] = row["id"]
                 st.switch_page("detail.py")
-            st.caption(when)
+            st.caption(
+                f"{when} · {config.HISTORY_FALLBACK_LABEL}" if row["is_fallback"] else when
+            )

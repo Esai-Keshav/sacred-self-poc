@@ -51,6 +51,12 @@ sqlite3 data/answers.db "select id, created_at, situation, willingness, cost_usd
 
 Databases from an earlier version, which kept all answers as JSON in one `answers` column, are converted to these columns automatically on the next save.
 
+## Scope
+
+The app answers messages about the user's own situation, feelings, relationships, work or life decisions, including asking how to handle them. Crisis messages are always answered, safety first. Anything else (general knowledge or facts, coding, news, trivia, requests to write or translate, questions about the AI) gets the fallback: the model returns `FALLBACK` and the app shows "I can't help with it." (`FALLBACK_MESSAGE` in `config.py`). The scope rules are in `prompts.py`.
+
+Fallback requests are saved too, with empty answer columns, and show "Out of scope" in History. The model decides scope, so borderline messages can be classified wrongly.
+
 ## History
 
 Below the main page, a scrollable list shows every saved question, newest first. Click one to open it on its own page with the question, date, model and all four answers, plus the copy box. Use "← Back" to return. Reloading the browser on the detail page loses the selection and shows a "not found" message with the way back.
