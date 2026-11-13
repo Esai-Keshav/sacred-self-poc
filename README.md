@@ -37,6 +37,30 @@ MODEL_NAME=test uv run streamlit run app.py
 
 This uses Pydantic AI's built-in test model. It returns placeholder text, so it only shows that the app and the four columns work.
 
+## Reasoning effort
+
+`REASONING_EFFORT` in `config.py` is `"low"`. Set it to `"minimal"`, `"medium"` or `"high"`, or to `None` to leave it out. Models that don't reason ignore it.
+
+## Saved data
+
+Each request is stored in a local SQLite file, `data/answers.db` (git-ignored), in the `requests` table: time, model, the user's text (`situation`), one column per answer (`willingness`, `reasoning`, `loving_heart`, `still_witness`), `key_facts` (the model's notes on the question), input and output tokens, and the estimated cost (empty when the model has no price data). The app tells users their message is saved.
+
+```bash
+sqlite3 data/answers.db "select id, created_at, situation, willingness, cost_usd from requests"
+```
+
+Databases from an earlier version, which kept all answers as JSON in one `answers` column, are converted to these columns automatically on the next save.
+
+## History
+
+Below the main page, a scrollable list shows every saved question, newest first. Click one to open it on its own page with the question, date, model and all four answers, plus the copy box. Use "← Back" to return. Reloading the browser on the detail page loses the selection and shows a "not found" message with the way back.
+
+## Copying a result
+
+Open a request from the History list. The detail page has a "Copy question and answers" box with the question and all four answers as plain text. Use its copy button to paste them elsewhere.
+
+The file holds personal text, so keep it private. Streamlit Community Cloud wipes local files on restart, so use an external database there.
+
 ## Tests
 
 There are no automated tests yet.
@@ -45,8 +69,12 @@ There are no automated tests yet.
 
 | File | Purpose |
 |---|---|
-| `app.py` | Streamlit UI |
+| `app.py` | Streamlit entry point: page setup and navigation |
+| `home.py` | Main page: question form, answers, history list |
+| `detail.py` | One saved request: question and answers |
+| `ui.py` | Shared rendering: four columns and the copy box |
 | `agent.py` | Output models, Pydantic AI agent and `get_perspectives()` |
+| `db.py` | SQLite: save, list and read requests |
 | `config.py` | Settings and all hardcoded non-prompt values |
 | `prompts.py` | All prompt text and perspective metadata |
 

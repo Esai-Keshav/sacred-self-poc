@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     max_input_chars: int = 2000
     # None = do not send temperature. Reasoning models (e.g. gpt-6-luna) reject it and warn.
     # Set a number (e.g. 0.5) only for non-reasoning models such as gpt-4o-mini.
-    # temperature: float | None = None
-    temperature: float | None = 0.5
+    temperature: float | None = None
+    # temperature: float | None = 0.5
     # Four answers of at most MAX_WORDS words need roughly 700 tokens, plus headroom.
     max_output_tokens: int = 1200
     # Seconds to wait for the model before giving up and inviting a retry.
@@ -30,8 +30,14 @@ settings = Settings()
 # MODEL_NAME = "openai:gpt-5.4-mini"
 
 
-MODEL_NAME = "openai:gpt-4o-mini"
-# MODEL_NAME = "openai:gpt-6-luna"
+# MODEL_NAME = "openai:gpt-4o-mini"
+MODEL_NAME = "openai:gpt-6-luna"
+# Reasoning effort: "minimal", "low", "medium" or "high". None = do not send it.
+# Non-reasoning models (e.g. gpt-4o-mini) ignore it.
+REASONING_EFFORT = "low"
+
+# --- Saved requests (SQLite) ---
+DB_PATH = "data/answers.db"
 # --- Answer length (words per perspective) ---
 MIN_WORDS = 70
 MAX_WORDS = 120
@@ -50,6 +56,15 @@ DISCLAIMER = (
     "This is a reflection tool, not medical, psychological, legal or crisis support. "
     "If you are in danger or in crisis, contact local emergency services or a trusted person."
 )
+HISTORY_HEADING = "History"
+HISTORY_EMPTY = "No saved requests yet."
+HISTORY_SNIPPET_CHARS = 90
+HISTORY_BOX_HEIGHT = 420
+BACK_LABEL = "← Back"
+DETAIL_NOT_FOUND = "That request was not found. Go back and pick one from the history."
+COPY_HEADING ="Copy question and answers"
+COPY_QUESTION_LABEL = "Question"
+SAVE_NOTICE ="Your message and the answers are saved to help improve this app."
 
 # --- Error messages ---
 ERROR_EMPTY_INPUT = "Please describe your situation first."
