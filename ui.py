@@ -8,9 +8,11 @@ def render_answers(answers: dict[str, str]) -> None:
     """The four answers side by side."""
     for col, perspective in zip(st.columns(len(PERSPECTIVES)), PERSPECTIVES):
         with col:
-            st.subheader(perspective.title)
-            st.caption(perspective.tagline)
-            st.write(answers[perspective.key])
+            # Same height for all four boxes; longer text scrolls inside.
+            with st.container(border=True, height=config.ANSWER_BOX_HEIGHT):
+                st.subheader(perspective.title)
+                st.caption(perspective.tagline)
+                st.write(answers[perspective.key])
 
 
 def copy_text(question: str, answers: dict[str, str]) -> str:

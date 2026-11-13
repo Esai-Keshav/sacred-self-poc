@@ -49,8 +49,7 @@ INPUT_LABEL = "What is on your mind?"
 INPUT_PLACEHOLDER = (
     "My child keeps making the same mistakes despite repeated corrections."
 )
-INPUT_HEIGHT = 150
-SUBMIT_LABEL = "Show me four perspectives"
+ANSWER_BOX_HEIGHT = 420
 SPINNER_TEXT = "Reflecting..."
 DISCLAIMER = (
     "This is a reflection tool, not medical, psychological, legal or crisis support. "

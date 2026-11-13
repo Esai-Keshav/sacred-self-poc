@@ -13,24 +13,25 @@ logger = logging.getLogger(__name__)
 # does not wipe it.
 RESULT_KEY = "result"
 FALLBACK_KEY = "fallback"
+QUESTION_KEY = "question"
 
 st.title(config.APP_TITLE)
 st.caption(config.APP_SUBTITLE)
 
-with st.form("situation_form", enter_to_submit=True):
-    situation = st.text_area(
-        config.INPUT_LABEL,
-        placeholder=config.INPUT_PLACEHOLDER,
-        height=config.INPUT_HEIGHT,
-        max_chars=config.settings.max_input_chars,
+st.markdown(f"**{config.INPUT_LABEL}**")
+# Inside a container the chat input stays here instead of pinning to the page
+# bottom. Enter sends, Shift+Enter adds a new line.
+with st.container():
+    situation = st.chat_input(
+        config.INPUT_PLACEHOLDER, max_chars=config.settings.max_input_chars
     )
-    submitted = st.form_submit_button(config.SUBMIT_LABEL, type="primary")
 
-if submitted:
+if situation:
     # Drop the previous answer so the page never shows stale output next to a
     # failed attempt.
     st.session_state.pop(RESULT_KEY, None)
     st.session_state.pop(FALLBACK_KEY, None)
+    st.session_state[QUESTION_KEY] = situation.strip()
     try:
         with st.spinner(config.SPINNER_TEXT):
             output = get_perspectives(situation)
@@ -45,6 +46,9 @@ if submitted:
         st.error(config.ERROR_GENERIC)
 
 answers = st.session_state.get(RESULT_KEY)
+if answers is not None or st.session_state.get(FALLBACK_KEY):
+    # The input box clears after sending, so show what was asked.
+    st.markdown("> " + st.session_state[QUESTION_KEY].replace("\n", "\n> "))
 if st.session_state.get(FALLBACK_KEY):
     st.info(config.FALLBACK_MESSAGE)
 elif answers is not None:
