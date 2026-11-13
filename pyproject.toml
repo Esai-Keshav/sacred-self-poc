@@ -1,0 +1,9 @@
+[project]
+name = "sacred-self-poc"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic-ai>=2.68.0",
+    "pydantic-settings>=2.16.2",
+    "streamlit>=1.67.0",
+]
