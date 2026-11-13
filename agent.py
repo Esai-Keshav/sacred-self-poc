@@ -14,6 +14,10 @@ class PerspectiveAnswer(BaseModel):
 
 
 class FourPerspectives(BaseModel):
+    # Filled first so the model extracts the user's details before writing. Not shown in the UI.
+    key_facts: str = Field(
+        description="Not shown to the user. 2-4 short lines: what happened; what the user wants; any contradiction or unfairness they mention; thoughts or feelings they actually expressed, quoted. 'none' where not said."
+    )
     willingness: PerspectiveAnswer
     reasoning: PerspectiveAnswer
     loving_heart: PerspectiveAnswer
@@ -21,7 +25,7 @@ class FourPerspectives(BaseModel):
 
 
 # Keeps prompts.PERSPECTIVES and the output model in step.
-assert [p.key for p in PERSPECTIVES] == list(FourPerspectives.model_fields)
+assert [p.key for p in PERSPECTIVES] == list(FourPerspectives.model_fields)[1:]
 
 
 class UserError(Exception):
@@ -44,11 +48,15 @@ def get_perspectives(situation: str) -> FourPerspectives:
     if len(text) > config.settings.max_input_chars:
         raise UserError(config.ERROR_INPUT_TOO_LONG.format(max=config.settings.max_input_chars))
 
-    result = get_agent().run_sync(
-        text,
-        model_settings={
-            "temperature": config.settings.temperature,
-            "max_tokens": config.settings.max_output_tokens,
-        },
-    )
+    try:
+        result = get_agent().run_sync(
+            text,
+            model_settings={
+                "max_tokens": config.settings.max_output_tokens,
+                **({"temperature": config.settings.temperature} if config.settings.temperature is not None else {}),
+            },
+            timeout=config.settings.request_timeout,
+        )
+    except TimeoutError:
+        raise UserError(config.ERROR_TIMEOUT) from None
     return result.output

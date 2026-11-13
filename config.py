@@ -11,8 +11,14 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
     max_input_chars: int = 2000
-    temperature: float = 0.5
-    max_output_tokens: int = 2000
+    # None = do not send temperature. Reasoning models (e.g. gpt-6-luna) reject it and warn.
+    # Set a number (e.g. 0.5) only for non-reasoning models such as gpt-4o-mini.
+    # temperature: float | None = None
+    temperature: float | None = 0.5
+    # Four answers of at most MAX_WORDS words need roughly 700 tokens, plus headroom.
+    max_output_tokens: int = 1200
+    # Seconds to wait for the model before giving up and inviting a retry.
+    request_timeout: float = 60.0
 
 
 settings = Settings()
@@ -21,8 +27,11 @@ settings = Settings()
 # Pydantic AI "provider:model" string. The matching API key goes in .env.
 # Use "test" for a no-key dry run that returns placeholder text.
 # MODEL_NAME = "openai:gpt-4.1-mini"
-MODEL_NAME = "openai:gpt-5.4-mini"
+# MODEL_NAME = "openai:gpt-5.4-mini"
 
+
+MODEL_NAME = "openai:gpt-4o-mini"
+# MODEL_NAME = "openai:gpt-6-luna"
 # --- Answer length (words per perspective) ---
 MIN_WORDS = 70
 MAX_WORDS = 120
@@ -45,6 +54,7 @@ DISCLAIMER = (
 # --- Error messages ---
 ERROR_EMPTY_INPUT = "Please describe your situation first."
 ERROR_INPUT_TOO_LONG = "Please keep your message under {max} characters."
+ERROR_TIMEOUT = "This is taking longer than expected. Please try again."
 ERROR_MODEL_NOT_SET = "No model is configured. Set MODEL_NAME (and your provider API key) in .env. See README.md."
 ERROR_GENERIC = (
     "Something went wrong while generating the perspectives. Please try again."
