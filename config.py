@@ -49,7 +49,7 @@ INPUT_LABEL = "What is on your mind?"
 INPUT_PLACEHOLDER = (
     "My child keeps making the same mistakes despite repeated corrections."
 )
-ANSWER_BOX_HEIGHT = 420
+ANSWER_CARDS_PER_ROW = 2
 SPINNER_TEXT = "Reflecting..."
 DISCLAIMER = (
     "This is a reflection tool, not medical, psychological, legal or crisis support. "

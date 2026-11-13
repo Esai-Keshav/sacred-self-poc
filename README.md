@@ -27,7 +27,7 @@ The provider is your choice. Without `MODEL_NAME` the app starts, but submitting
 uv run streamlit run app.py
 ```
 
-Open the URL Streamlit prints, type a situation, and press Enter to send (Shift+Enter adds a new line). Each answer appears in its own box; the box height is `ANSWER_BOX_HEIGHT` in `config.py`.
+Open the URL Streamlit prints, type a situation, and press Enter to send (Shift+Enter adds a new line). The message box is disabled while an answer is being generated. Each answer appears as a card in a 2 by 2 grid (`ANSWER_CARDS_PER_ROW` in `config.py`); cards grow to fit their text, so nothing scrolls.
 
 ## Dry run without an API key
 

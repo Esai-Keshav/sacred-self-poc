@@ -23,7 +23,9 @@ st.markdown(f"**{config.INPUT_LABEL}**")
 # bottom. Enter sends, Shift+Enter adds a new line.
 with st.container():
     situation = st.chat_input(
-        config.INPUT_PLACEHOLDER, max_chars=config.settings.max_input_chars
+        config.INPUT_PLACEHOLDER,
+        max_chars=config.settings.max_input_chars,
+        submit_mode="disable",  # greyed out while an answer is being generated
     )
 
 if situation:

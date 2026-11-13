@@ -5,14 +5,17 @@ from prompts import PERSPECTIVES
 
 
 def render_answers(answers: dict[str, str]) -> None:
-    """The four answers side by side."""
-    for col, perspective in zip(st.columns(len(PERSPECTIVES)), PERSPECTIVES):
-        with col:
-            # Same height for all four boxes; longer text scrolls inside.
-            with st.container(border=True, height=config.ANSWER_BOX_HEIGHT):
-                st.subheader(perspective.title)
-                st.caption(perspective.tagline)
-                st.write(answers[perspective.key])
+    """The four answers as cards in a grid. Cards grow to fit their text, so nothing scrolls."""
+    per_row = config.ANSWER_CARDS_PER_ROW
+    for start in range(0, len(PERSPECTIVES), per_row):
+        row = PERSPECTIVES[start : start + per_row]
+        for col, perspective in zip(st.columns(per_row), row):
+            with col:
+                # "stretch" makes the cards in one row the same height.
+                with st.container(border=True, height="stretch"):
+                    st.subheader(perspective.title)
+                    st.caption(perspective.tagline)
+                    st.write(answers[perspective.key])
 
 
 def copy_text(question: str, answers: dict[str, str]) -> str:
