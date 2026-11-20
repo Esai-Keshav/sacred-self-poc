@@ -7,38 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Install: `uv sync`
 - Run: `uv run streamlit run app.py` (needs `.env` copied from `.env.example`)
 - Dry run without a key: `MODEL_NAME=test uv run streamlit run app.py`
-- There are no automated tests yet. No git history.
+- Tests: `uv run pytest`
 
 ## Architecture
 
-One structured Pydantic AI call returns all four perspective answers. `app.py` (UI) calls `agent.get_perspectives()`, which validates input, builds the agent lazily from `config.settings.model_name`, and returns a `FourPerspectives`. All prompt text is in `prompts.py`. All other config and hardcoded strings are in `config.py`. `PERSPECTIVES` in `prompts.py` fixes column order, and an import-time `assert` in `agent.py` requires its keys to equal the `FourPerspectives` field names.
-
-v2 (`prompts_v2.py`, `get_perspectives_v2`, `ENABLE_V2` in `config.py`; `ENABLE_V1 = False` runs v2 alone and saves it as its own row with v1 columns NULL) is a second call built from the doc: same four perspectives, each answered as one short cell in the doc's example-table style, shown below v1 and saved in the `<key>_v2` columns of `requests`. Its word range is `V2_MIN_WORDS`/`V2_MAX_WORDS`.
-
-The source design is `docs/Reset- Sacred Self.md`, a ~1000-line product and prompt-design document. Spec and plan are in `docs/superpowers/`.
-
-## What the design doc defines
-
-The app responds to a user's life problem through four "consciousness perspectives". Each perspective is meant to become a distinct AI persona or system prompt:
-
-1. **Willingness**: asks what the user can learn, improve or contribute.
-2. **The Reasoning Mind**: asks for evidence and separates facts from interpretation.
-3. **The Loving Heart**: responds with compassion, without excusing harm.
-4. **The Still Witness**: asks the user to observe thoughts and emotions without identifying with them.
-
-The doc opens with an example table: each row is one user problem, answered once per perspective. The doc requires four things for every perspective:
-
-- Worldview
-- Thinking pattern (the questions it naturally asks)
-- Response pattern (responses to 20-30 real-life problems)
-- Transformation (the insight the user should ideally reach)
-
-Perspectives 2-4 each have the same sections: Core Identity, Worldview, Characteristics, Communication Style, Response Structure, What You Must Avoid, Desired Transformation, and worked examples. Perspective 1 is less complete, ending with a "Next step" section. Treat these sections as the source material for persona prompts and evaluation examples. Keep new perspective material in the same structure.
-
-## Constraints from the doc
-
-- The perspectives are modelled on the Hawkins Map of Consciousness. Do not use Hawkins's name anywhere in the app, and do not reuse the original map directly. The doc requires an original expression of the principles and a licensing review for any direct reuse.
-- Responses must not be generic reassurance such as "Everything will be okay. Stay positive." The doc's examples show guiding questions grounded in the user's specific situation.
+One structured Pydantic AI call (`agent.py` `get_card`) returns a `WillingnessCard` or a `Fallback`. `WillingnessCard` fields are `expanded`, `hook`, `practise`, `say_it`, in that order. The hook word range is checked by an output validator that raises `ModelRetry`. Prompt text is in `prompts.py` as Markdown. `db.py` is the Supabase layer (pure row builders plus client calls). `ui.py` renders cards and feedback. `home.py` is the single page, and `app.py` runs it. `config.py` holds all settings and UI text. `supabase/schema.sql` defines the tables and RLS.
 
 ## Workflow
 
@@ -49,6 +22,10 @@ Perspectives 2-4 each have the same sections: Core Identity, Worldview, Characte
 5. **Features are spec-driven.** `brainstorming` writes the design to `docs/superpowers/specs/`. `writing-plans` writes the plan to `docs/superpowers/plans/`.
 6. **Implement small.** Readable, modular code. Update tests with the change.
 7. **Verify.** Run the affected tests, then the full suite. State plainly what could not be verified.
+
+## Constraints
+
+Internal testing only. Anon Supabase key with open insert and select policies: not for public launch.
 
 ## Behavior guidelines
 

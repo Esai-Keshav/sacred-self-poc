@@ -13,79 +13,66 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
     max_input_chars: int = 2000
-    # None = do not send temperature. Reasoning models (e.g. gpt-6-luna) reject it and warn.
-    # Set a number (e.g. 0.5) only for non-reasoning models such as gpt-4o-mini.
+    # None = do not send temperature. Reasoning models reject it.
     temperature: float | None = None
-    # temperature: float | None = 0.5
-    # v1: four answers of at most MAX_WORDS words need roughly 700 tokens. v2 adds a question to each, plus headroom.
+    # One card (about 300 words) plus reasoning tokens fits within this.
     max_output_tokens: int = 2000
     # Seconds to wait for the model before giving up and inviting a retry.
     request_timeout: float = 60.0
+    supabase_url: str = ""
+    supabase_key: str = ""
 
 
 settings = Settings()
 
 # --- Model ---
 # Pydantic AI "provider:model" string. The matching API key goes in .env.
-# Use "test" for a no-key dry run that returns placeholder text.
-# MODEL_NAME = "openai:gpt-4.1-mini"
-# MODEL_NAME = "openai:gpt-5.4-mini"
-
-
-# MODEL_NAME = "openai:gpt-4o-mini"
 MODEL_NAME = "openai:gpt-6-luna"
 # Reasoning effort: "minimal", "low", "medium" or "high". None = do not send it.
-# Non-reasoning models (e.g. gpt-4o-mini) ignore it.
 REASONING_EFFORT = "low"
 
-# --- Saved requests (SQLite) ---
-DB_PATH = "data/answers.db"
-# --- Answer length (words per perspective) ---
-MIN_WORDS = 70
-MAX_WORDS = 120
+# --- Card length (words) ---
+HOOK_MIN_WORDS = 25
+HOOK_MAX_WORDS = 30
+EXPANDED_MIN_WORDS = 80
+EXPANDED_MAX_WORDS = 120
 
-# --- v2 (prompts from docs/Reset- Sacred Self.md) ---
-ENABLE_V1 = True
-ENABLE_V2 = True
-# Words per perspective for v2 (v1 uses MIN_WORDS / MAX_WORDS above).
-V2_MIN_WORDS = 30
-V2_MAX_WORDS = 50
-V2_HEADING = "v2"
-ERROR_V2 = "The v2 answers could not be generated. The v1 answers above are unaffected."
+# --- History ---
+HISTORY_LIMIT = 50
+DISPLAY_TZ = timezone(timedelta(hours=5, minutes=30))
+DISPLAY_TZ_LABEL = "IST"
 
 # --- UI text ---
 APP_TITLE = "Sacred Self"
-APP_SUBTITLE = "Share a situation or issue. See it through four perspectives."
+APP_SUBTITLE = "Share a thought. Get one card to build your willingness."
 INPUT_LABEL = "What is on your mind?"
-INPUT_PLACEHOLDER = (
-    "My child keeps making the same mistakes despite repeated corrections."
-)
-ANSWER_CARDS_PER_ROW = 2
+INPUT_PLACEHOLDER = "My child keeps making the same mistakes despite repeated corrections."
 SPINNER_TEXT = "Reflecting..."
+EXPANDED_LABEL = "Read more"
+PRACTISE_LABEL = "Practise"
+SAY_IT_LABEL = "Say it"
+FEEDBACK_HEADING = "Your feedback"
+FEEDBACK_COMMENT_LABEL = "Comment (optional)"
+FEEDBACK_SUBMIT_LABEL = "Send feedback"
+FEEDBACK_THANKS = "Thanks. Your feedback is saved."
+TAB_NEW_LABEL = "New card"
+TAB_HISTORY_LABEL = "History"
+FEEDBACK_HINT = "Rate this card and leave a comment in the History tab."
+HISTORY_EMPTY = "No saved cards yet."
 DISCLAIMER = (
     "This is a reflection tool, not medical, psychological, legal or crisis support. "
     "If you are in danger or in crisis, contact local emergency services or a trusted person."
 )
+SAVE_NOTICE = (
+    "Your thought, the card and any feedback are saved and visible to all users of this app."
+)
 FALLBACK_MESSAGE = "I can't help with it."
-HISTORY_FALLBACK_LABEL = "Out of scope"
-HISTORY_HEADING = "History"
-HISTORY_EMPTY = "No saved requests yet."
-HISTORY_SNIPPET_CHARS = 90
-HISTORY_BOX_HEIGHT = 420
-DISPLAY_TZ = timezone(timedelta(hours=5, minutes=30))
-DISPLAY_TZ_LABEL = "IST"
-BACK_LABEL = "← Back"
-DETAIL_NOT_FOUND = "That request was not found. Go back and pick one from the history."
-COPY_HEADING = "Copy question and answers"
-COPY_QUESTION_LABEL = "Question"
-SAVE_NOTICE = "Your message and the answers are saved to help improve this app."
 
 # --- Error messages ---
 ERROR_EMPTY_INPUT = "Please describe your situation first."
 ERROR_INPUT_TOO_LONG = "Please keep your message under {max} characters."
 ERROR_TIMEOUT = "This is taking longer than expected. Please try again."
-ERROR_MODEL_NOT_SET = "No model is configured. Set MODEL_NAME (and your provider API key) in .env. See README.md."
-ERROR_NO_VERSION = "Both ENABLE_V1 and ENABLE_V2 are off in config.py. Turn one on."
-ERROR_GENERIC = (
-    "Something went wrong while generating the perspectives. Please try again."
-)
+ERROR_SAVE = "Your card is shown, but it could not be saved."
+ERROR_HISTORY = "The history could not be loaded."
+ERROR_FEEDBACK = "Your feedback could not be saved. Please try again."
+ERROR_GENERIC = "Something went wrong while generating the card. Please try again."

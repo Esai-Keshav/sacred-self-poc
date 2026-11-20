@@ -1,38 +1,33 @@
 import logging
+from datetime import datetime
 from functools import lru_cache
 from typing import Literal
 
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent
+from pydantic_ai import Agent, ModelRetry, RunContext
 from pydantic_ai.messages import ModelResponse
 
 import config
 import db
-from prompts import PERSPECTIVES, build_system_prompt
-from prompts_v2 import PERSPECTIVES_V2, build_system_prompt_v2
+from prompts import build_system_prompt, today_line
 
 logger = logging.getLogger(__name__)
 
 
-class PerspectiveAnswer(BaseModel):
-    response: str = Field(
-        description=f"The answer for this perspective, {config.MIN_WORDS}-{config.MAX_WORDS} words, addressed to the user."
+class WillingnessCard(BaseModel):
+    # Filled in this order: the model writes the body first, then the hook that teases it.
+    expanded: str = Field(
+        description=f"{config.EXPANDED_MIN_WORDS}-{config.EXPANDED_MAX_WORDS} words, 2-3 short paragraphs. Appreciate one specific thing the person did, build belief in their capacity, and focus on one process step they can try."
     )
-
-
-class FourPerspectives(BaseModel):
-    # Filled first so the model extracts the user's details before writing. Not shown in the UI.
-    key_facts: str = Field(
-        description="Not shown to the user. 2-4 short lines: what happened; what the user wants; any contradiction or unfairness they mention; thoughts or feelings they actually expressed, quoted. 'none' where not said."
+    hook: str = Field(
+        description=f"{config.HOOK_MIN_WORDS}-{config.HOOK_MAX_WORDS} words. A specific pull that teases the strongest idea in expanded. Do not repeat the person's message."
     )
-    willingness: PerspectiveAnswer
-    reasoning: PerspectiveAnswer
-    loving_heart: PerspectiveAnswer
-    still_witness: PerspectiveAnswer
-
-
-# Keeps prompts.PERSPECTIVES and the output model in step.
-assert [p.key for p in PERSPECTIVES] == list(FourPerspectives.model_fields)[1:]
+    practise: str = Field(
+        description="One sentence with a deadline, such as 'In 3 days, ...'. One concrete task the person can do from their own words."
+    )
+    say_it: str = Field(
+        description="One first-person sentence the person says aloud, in their own voice, using details from their message."
+    )
 
 
 class Fallback(BaseModel):
@@ -43,61 +38,59 @@ class Fallback(BaseModel):
     message: Literal["FALLBACK"]
 
 
-def answers_dict(output: FourPerspectives) -> dict[str, str]:
-    """Plain {column: text} form of an answer, used for saving and for display."""
-    return {
-        "key_facts": output.key_facts,
-        **{p.key: getattr(output, p.key).response for p in PERSPECTIVES},
-    }
-
-
-class PerspectiveAnswerV2(BaseModel):
-    response: str = Field(
-        description=f"The answer for this perspective, {config.V2_MIN_WORDS}-{config.V2_MAX_WORDS} words, addressed to the user."
-    )
-
-
-class FourPerspectivesV2(BaseModel):
-    key_facts: str = Field(
-        description="Not shown to the user. 2-4 short lines: what happened; what the user wants; any contradiction or unfairness they mention; thoughts or feelings they actually expressed, quoted. 'none' where not said."
-    )
-    willingness: PerspectiveAnswerV2
-    reasoning: PerspectiveAnswerV2
-    loving_heart: PerspectiveAnswerV2
-    still_witness: PerspectiveAnswerV2
-
-
-assert [p.key for p in PERSPECTIVES_V2] == list(FourPerspectivesV2.model_fields)[1:]
-
-
-def answers_dict_v2(output: FourPerspectivesV2) -> dict[str, str]:
-    """{perspective: text}, used for saving and display."""
-    return {p.key: getattr(output, p.key).response for p in PERSPECTIVES_V2}
-
-
 class UserError(Exception):
     """Bad input or missing setup. The message is safe to show the user."""
 
 
+def word_count(text: str) -> int:
+    return len(text.split())
+
+
+def check_hook_length(hook: str) -> None:
+    n = word_count(hook)
+    if not config.HOOK_MIN_WORDS <= n <= config.HOOK_MAX_WORDS:
+        raise ModelRetry(
+            f"The hook has {n} words. Write it in {config.HOOK_MIN_WORDS}-{config.HOOK_MAX_WORDS} words."
+        )
+
+
+def check_punctuation(card: WillingnessCard) -> None:
+    """No exclamation marks anywhere. No question marks outside expanded, and at most one there."""
+    fields = card.model_dump()
+    for name, text in fields.items():
+        if "!" in text:
+            raise ModelRetry(f"The {name} has an exclamation mark. Remove it.")
+    for name in ("hook", "practise", "say_it"):
+        if "?" in fields[name]:
+            raise ModelRetry(f"The {name} has a question mark. Only expanded may ask one soft question.")
+    if fields["expanded"].count("?") > 1:
+        raise ModelRetry("expanded asks more than one question. Keep at most one soft question.")
+
+
 @lru_cache
-def get_agent() -> Agent[None, FourPerspectives | Fallback]:
-    return Agent(
+def get_agent() -> Agent[None, WillingnessCard | Fallback]:
+    agent = Agent(
         config.MODEL_NAME,
-        output_type=[FourPerspectives, Fallback],
+        output_type=[WillingnessCard, Fallback],
         system_prompt=build_system_prompt(),
     )
 
+    @agent.system_prompt
+    def _today() -> str:
+        # Read on every run, so a cached agent still knows today's date.
+        return today_line(datetime.now(config.DISPLAY_TZ))
 
-@lru_cache
-def get_agent_v2() -> Agent[None, FourPerspectivesV2 | Fallback]:
-    return Agent(
-        config.MODEL_NAME,
-        output_type=[FourPerspectivesV2, Fallback],
-        system_prompt=build_system_prompt_v2(),
-    )
+    @agent.output_validator
+    def _check_card(ctx: RunContext[None], output):
+        if isinstance(output, WillingnessCard):
+            check_hook_length(output.hook)
+            check_punctuation(output)
+        return output
+
+    return agent
 
 
-def _run(agent: Agent, situation: str):
+def _run(situation: str):
     """Validate the input, call the model, print usage. Returns (text, result, cost)."""
     text = situation.strip()
     if not text:
@@ -108,7 +101,7 @@ def _run(agent: Agent, situation: str):
         )
 
     try:
-        result = agent.run_sync(
+        result = get_agent().run_sync(
             text,
             model_settings={
                 "max_tokens": config.settings.max_output_tokens,
@@ -144,53 +137,23 @@ def _run(agent: Agent, situation: str):
     return text, result, cost
 
 
-def get_perspectives(situation: str) -> tuple[FourPerspectives | None, int | None]:
-    """(four answers, saved request id). Answers are None when the model returned FALLBACK
-    (not a personal issue). The id is None when saving failed."""
-    text, result, cost = _run(get_agent(), situation)
+def get_card(situation: str) -> tuple[WillingnessCard | None, int | None]:
+    """(card, saved card id). The card is None when the model returned FALLBACK (not a
+    personal issue), and fallbacks are never saved. The id is None when saving failed."""
+    text, result, cost = _run(situation)
+    if not isinstance(result.output, WillingnessCard):
+        return None, None
     usage = result.usage
-    output = result.output if isinstance(result.output, FourPerspectives) else None
-    request_id = None
+    card_id = None
     try:
-        request_id = db.save_request(
+        card_id = db.save_card(
             text,
-            answers_dict(output) if output else None,
+            result.output.model_dump(),
             config.MODEL_NAME,
             usage.input_tokens,
             usage.output_tokens,
             cost,
         )
-    except Exception:  # never hide the answers because saving failed
-        logger.exception("Could not save request")
-    return output, request_id
-
-
-def get_perspectives_v2(
-    situation: str, request_id: int | None
-) -> tuple[dict[str, str] | None, int | None]:
-    """(v2 answers or None on FALLBACK, saved request id).
-
-    With a request_id (v1 ran) the answers are saved onto that v1 row. Without one (v1 off)
-    a new row is saved: v1 columns NULL, and all NULL for a fallback."""
-    text, result, cost = _run(get_agent_v2(), situation)
-    answers = (
-        answers_dict_v2(result.output)
-        if isinstance(result.output, FourPerspectivesV2)
-        else None
-    )
-    try:
-        if request_id is None:
-            usage = result.usage
-            request_id = db.save_request(
-                text,
-                None,
-                config.MODEL_NAME,
-                usage.input_tokens,
-                usage.output_tokens,
-                cost,
-            )
-        if answers:
-            db.save_v2(request_id, answers)
-    except Exception:  # never hide the answers because saving failed
-        logger.exception("Could not save v2 answers")
-    return answers, request_id
+    except Exception:  # never hide the card because saving failed
+        logger.exception("Could not save card")
+    return result.output, card_id
