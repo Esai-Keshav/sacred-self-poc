@@ -1,12 +1,15 @@
 import re
 from datetime import datetime
 
+import pytest
+
 import config
 from prompts import (
     EXAMPLES,
     PRECEDENCE,
     PROMPT_DIR,
     build_system_prompt,
+    language_guide,
     today_line,
 )
 
@@ -52,15 +55,49 @@ def test_examples_obey_punctuation_rules():
 
 
 def test_prompt_files_exist():
-    assert (PROMPT_DIR / "language.md").is_file()
+    assert (PROMPT_DIR / "language_v1.md").is_file()
+    assert (PROMPT_DIR / "language_v2.md").is_file()
     assert (PROMPT_DIR / "willingness.md").is_file()
+
+
+def test_default_guide_is_v2(monkeypatch):
+    monkeypatch.setattr(config, "PROMPT_VERSION", "v2")
+    assert "Core Language & Voice" in language_guide()
+
+
+def test_v1_guide_is_master_prompt_filled_for_willingness(monkeypatch):
+    monkeypatch.setattr(config, "PROMPT_VERSION", "v1")
+    guide = language_guide()
+    assert "Master System Prompt" in guide
+    assert "willingness" in guide
+    assert "{{" not in guide
+
+
+def test_unknown_prompt_version_is_rejected(monkeypatch):
+    monkeypatch.setattr(config, "PROMPT_VERSION", "v9")
+    with pytest.raises(ValueError, match="v1, v2"):
+        language_guide()
 
 
 def test_prompt_contains_language_guide_after_precedence():
     prompt = build_system_prompt()
-    language = (PROMPT_DIR / "language.md").read_text(encoding="utf-8")
-    assert language in prompt
-    assert prompt.index(PRECEDENCE) < prompt.index(language)
+    guide = language_guide()
+    assert guide in prompt
+    assert prompt.index(PRECEDENCE) < prompt.index(guide)
+    assert "Example responses inside the guide show voice only" in prompt
+
+
+def test_prompt_speaks_as_sacred_self_not_lakshana():
+    prompt = build_system_prompt()
+    assert "Sacred Self" in prompt
+    for old_line in ("Living in a joint family taught me", "You are Lakshana"):
+        assert old_line not in prompt
+
+
+def test_prompt_is_secular():
+    prompt = build_system_prompt().lower()
+    for spiritual_word in ("divine", "sanskrit", "gita", "sankalpa", "seva", "swadharma"):
+        assert spiritual_word not in prompt, spiritual_word
 
 
 def test_prompt_contains_example_thoughts_and_limits():
@@ -75,22 +112,21 @@ def test_prompt_has_no_unfilled_placeholders():
     prompt = build_system_prompt()
     assert "{HOOK_" not in prompt
     assert "{EXP_" not in prompt
+    assert "{{" not in prompt
 
 
-def test_prompt_contains_stories_and_all_teachings():
+def test_prompt_contains_all_teachings():
     prompt = build_system_prompt()
-    for story_name in ("Joint family", "Ice House", "Her courses", "Homeschooling"):
-        assert story_name in prompt
     for teaching in (
         "Challenges refine us",
         "Triggers are doorways",
         "Effort is ours, results are not",
-        "Sankalpa",
+        "One clear intention",
         "The key is within",
         "A willing heart is a teachable heart",
-        "Seva",
-        "Effort invites grace",
-        "Swadharma",
+        "Service",
+        "Effort invites support",
+        "Our own way of shining",
     ):
         assert teaching in prompt
 

@@ -31,11 +31,14 @@ MODEL_NAME = "openai:gpt-6-luna"
 # Reasoning effort: "minimal", "low", "medium" or "high". None = do not send it.
 REASONING_EFFORT = "low"
 
+# --- Language guide: v1 = Master System Prompt, v2 = Core Language & Voice ---
+PROMPT_VERSION = "v2"
+
 # --- Card length (words) ---
 HOOK_MIN_WORDS = 25
 HOOK_MAX_WORDS = 30
-EXPANDED_MIN_WORDS = 80
-EXPANDED_MAX_WORDS = 120
+EXPANDED_MIN_WORDS = 50
+EXPANDED_MAX_WORDS = 60
 
 # --- History ---
 HISTORY_LIMIT = 50
@@ -43,15 +46,19 @@ DISPLAY_TZ = timezone(timedelta(hours=5, minutes=30))
 DISPLAY_TZ_LABEL = "IST"
 
 # --- UI text ---
+# False hides the Say it line on cards and its feedback row. The model still writes it.
+INCLUDE_SAY_IT = False
+# INCLUDE_SAY_IT = True
 APP_TITLE = "Sacred Self"
-APP_SUBTITLE = "Share a thought. Get one card to build your willingness."
-INPUT_LABEL = "What is on your mind?"
-INPUT_PLACEHOLDER = "My child keeps making the same mistakes despite repeated corrections."
+INPUT_PLACEHOLDER = (
+    "My child keeps making the same mistakes despite repeated corrections."
+)
 SPINNER_TEXT = "Reflecting..."
-EXPANDED_LABEL = "Read more"
 PRACTISE_LABEL = "Practise"
 SAY_IT_LABEL = "Say it"
 FEEDBACK_HEADING = "Your feedback"
+FEEDBACK_SO_FAR = "Feedback so far"
+FEEDBACK_NONE = "No feedback yet."
 FEEDBACK_COMMENT_LABEL = "Comment (optional)"
 FEEDBACK_SUBMIT_LABEL = "Send feedback"
 FEEDBACK_THANKS = "Thanks. Your feedback is saved."
@@ -59,13 +66,6 @@ TAB_NEW_LABEL = "New card"
 TAB_HISTORY_LABEL = "History"
 FEEDBACK_HINT = "Rate this card and leave a comment in the History tab."
 HISTORY_EMPTY = "No saved cards yet."
-DISCLAIMER = (
-    "This is a reflection tool, not medical, psychological, legal or crisis support. "
-    "If you are in danger or in crisis, contact local emergency services or a trusted person."
-)
-SAVE_NOTICE = (
-    "Your thought, the card and any feedback are saved and visible to all users of this app."
-)
 FALLBACK_MESSAGE = "I can't help with it."
 
 # --- Error messages ---

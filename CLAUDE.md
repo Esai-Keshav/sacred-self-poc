@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-One structured Pydantic AI call (`agent.py` `get_card`) returns a `WillingnessCard` or a `Fallback`. `WillingnessCard` fields are `expanded`, `hook`, `practise`, `say_it`, in that order. The hook word range is checked by an output validator that raises `ModelRetry`. Prompt text is in `prompts.py` as Markdown. `db.py` is the Supabase layer (pure row builders plus client calls). `ui.py` renders cards and feedback. `home.py` is the single page, and `app.py` runs it. `config.py` holds all settings and UI text. `supabase/schema.sql` defines the tables and RLS.
+One structured Pydantic AI call (`agent.py` `get_card`) returns a `WillingnessCard` or a `Fallback`. `WillingnessCard` fields are `expanded`, `hook`, `practise`, `say_it`, in that order. The hook word range is checked by an output validator that raises `ModelRetry`. Prompt text is in `prompt/` as Markdown: `willingness.md` (the card rules) and `language_v1.md` or `language_v2.md` (the voice guide). `config.PROMPT_VERSION` picks the voice guide; `prompts.py` builds the system prompt. `db.py` is the Supabase layer (pure row builders plus client calls). `ui.py` renders cards and feedback. `home.py` is the single page, and `app.py` runs it. `config.py` holds all settings and UI text. `supabase/schema.sql` defines the tables and RLS.
 
 ## Workflow
 

@@ -10,12 +10,10 @@ from ui import format_when, render_card, render_feedback
 logger = logging.getLogger(__name__)
 
 st.title(config.APP_TITLE)
-st.caption(config.APP_SUBTITLE)
 
 tab_new, tab_history = st.tabs([config.TAB_NEW_LABEL, config.TAB_HISTORY_LABEL])
 
 with tab_new:
-    st.markdown(f"**{config.INPUT_LABEL}**")
     thought = st.chat_input(
         config.INPUT_PLACEHOLDER,
         max_chars=config.settings.max_input_chars,
@@ -39,9 +37,6 @@ with tab_new:
         except Exception:
             logger.exception("Card generation failed")
             st.error(config.ERROR_GENERIC)
-
-    st.caption(config.DISCLAIMER)
-    st.caption(config.SAVE_NOTICE)
 
 with tab_history:
     try:

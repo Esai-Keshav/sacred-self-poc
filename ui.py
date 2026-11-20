@@ -28,25 +28,43 @@ def format_when(created_at: str) -> str:
 
 
 def render_card(card: dict) -> None:
+    """The whole card at once: hook, body, practise and say-it."""
     with st.container(border=True):
         st.markdown(f"**{card['hook']}**")
-        with st.expander(config.EXPANDED_LABEL):
-            st.write(card["expanded"])
-            st.markdown(f"**{config.PRACTISE_LABEL}**")
-            st.write(card["practise"])
+        st.write(card["expanded"])
+        st.markdown(f"**{config.PRACTISE_LABEL}**")
+        st.write(card["practise"])
+        if config.INCLUDE_SAY_IT:
             st.markdown(f"**{config.SAY_IT_LABEL}**")
             st.markdown(f"> {card['say_it']}")
 
 
+def feedback_line(row: dict) -> str:
+    """One submission as a line: rated parts as 'Label 👍/👎', then the comment."""
+    parts = []
+    for name, label in FEEDBACK_ITEMS:
+        vote = row.get(name)
+        if vote is not None:
+            parts.append(f"{label} {'👍' if vote == 1 else '👎'}")
+    if row.get("comment"):
+        parts.append(f"💬 {row['comment']}")
+    return " · ".join(parts)
+
+
 def render_feedback(card_id: int, feedback_rows: list[dict]) -> None:
-    """Thumbs per part of the card, an optional comment, and a Send button.
-    Earlier comments for this card show above the form."""
-    for row in feedback_rows:
-        if row.get("comment"):
-            st.caption(f"💬 {row['comment']}")
+    """Filled feedback for this card, then the thumbs form, an optional comment and Send."""
+    st.markdown(f"**{config.FEEDBACK_SO_FAR}**")
+    lines = [line for line in (feedback_line(row) for row in feedback_rows) if line]
+    if not lines:
+        st.caption(config.FEEDBACK_NONE)
+    for line in lines:
+        st.markdown(f"- {line}")
     with st.expander(config.FEEDBACK_HEADING):
         votes = []
         for name, label in FEEDBACK_ITEMS:
+            if name == "say_it" and not config.INCLUDE_SAY_IT:
+                votes.append(None)
+                continue
             label_col, vote_col = st.columns([1, 2])
             label_col.markdown(f"**{label}**")
             votes.append(to_vote(vote_col.feedback("thumbs", key=f"{name}_{card_id}")))

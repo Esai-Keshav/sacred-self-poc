@@ -5,24 +5,23 @@ import config
 
 PROMPT_DIR = Path(__file__).parent / "prompt"
 
+LANGUAGE_FILES = {"v1": "language_v1.md", "v2": "language_v2.md"}
+
 # Placed above the language guide so the model knows which rules win when they clash.
 PRECEDENCE = (
     "The guide below sets wording and tone only. If it conflicts with Safety, Scope, "
-    "Grounding or Card fields above, those win."
+    "Grounding or Card fields above, those win. Example responses inside the guide show "
+    "voice only; their length, number of questions and layout do not apply."
 )
 
 EXAMPLES: list[dict] = [
     {
         "thought": "My husband doesn't appreciate anything I do for the family.",
         "expanded": (
-            "Your giving has been steady, and the hurt of it going unnoticed is real. Wanting "
-            "to be seen is not a weakness; it is a need that belongs to you. The Divine works "
-            "through small daily acts of care, and yours are worth more than any single moment "
-            "of thanks. Your part is the sincere effort of speaking clearly. A sankalpa, one "
-            "clear intention, can help: I will say what I need, calmly. The result, whether he "
-            "responds warmly or not, is not yours to carry. Each honest try teaches you what "
-            "words land and what timing works. What would it feel like to offer your need as a "
-            "gift rather than a complaint?"
+            "Your giving has been steady, and it hurts when it goes unnoticed. Wanting to be "
+            "seen is a fair need, not a weakness. Your part is the sincere effort of saying what "
+            "you need, calmly. How he responds is not yours to carry. Each honest try teaches "
+            "you what words land and when."
         ),
         "hook": (
             "Your giving has been steady, and it hurts to feel unseen. Strength grows when you "
@@ -39,12 +38,9 @@ EXAMPLES: list[dict] = [
         "thought": "My colleague got promoted instead of me. I feel jealous and inferior.",
         "expanded": (
             "Jealousy and feeling inferior are heavy to carry, and it is honest of you to name "
-            "them. One promotion does not decide your worth. You are capable of growing the "
-            "skills this role asks for. Your part is steady effort, and the outcome is not yours "
-            "to hold. Look at the process, not the title: what did your colleague do regularly "
-            "that you could try? Ask them how they approached the work, or ask your manager what "
-            "the next level requires. Each conversation is a step you control, and each one "
-            "teaches you something real."
+            "them. One promotion does not decide your worth or your ability. Your part is steady "
+            "effort, and the outcome is not yours to hold. Look at the process: what did your "
+            "colleague do regularly that you could try?"
         ),
         "hook": (
             "This promotion is a mirror, showing where you are ready to grow. Learn one clear "
@@ -73,6 +69,18 @@ def _fill(text: str) -> str:
     return text
 
 
+def language_guide() -> str:
+    """The language guide for config.PROMPT_VERSION, with runtime placeholders filled."""
+    version = config.PROMPT_VERSION
+    if version not in LANGUAGE_FILES:
+        raise ValueError(
+            f"PROMPT_VERSION must be one of {', '.join(LANGUAGE_FILES)}, not {version!r}."
+        )
+    text = (PROMPT_DIR / LANGUAGE_FILES[version]).read_text(encoding="utf-8")
+    text = text.replace("{{perspective}}", "willingness")
+    return text.replace("{{user_context}}", "the person's message, sent as the next message")
+
+
 def _render_examples() -> str:
     blocks = []
     for number, example in enumerate(EXAMPLES, start=1):
@@ -94,13 +102,12 @@ def today_line(now: datetime) -> str:
 
 def build_system_prompt() -> str:
     willingness = _fill((PROMPT_DIR / "willingness.md").read_text(encoding="utf-8"))
-    language = (PROMPT_DIR / "language.md").read_text(encoding="utf-8")
     return "\n\n".join(
         [
             willingness,
             "## Language guide",
             PRECEDENCE,
-            language,
+            language_guide(),
             "## Examples",
             _render_examples(),
         ]
