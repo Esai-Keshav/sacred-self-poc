@@ -13,6 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 One structured Pydantic AI call returns all four perspective answers. `app.py` (UI) calls `agent.get_perspectives()`, which validates input, builds the agent lazily from `config.settings.model_name`, and returns a `FourPerspectives`. All prompt text is in `prompts.py`. All other config and hardcoded strings are in `config.py`. `PERSPECTIVES` in `prompts.py` fixes column order, and an import-time `assert` in `agent.py` requires its keys to equal the `FourPerspectives` field names.
 
+v2 (`prompts_v2.py`, `get_perspectives_v2`, `ENABLE_V2` in `config.py`; `ENABLE_V1 = False` runs v2 alone and saves it as its own row with v1 columns NULL) is a second call built from the doc: same four perspectives, each answered as one short cell in the doc's example-table style, shown below v1 and saved in the `<key>_v2` columns of `requests`. Its word range is `V2_MIN_WORDS`/`V2_MAX_WORDS`.
+
 The source design is `docs/Reset- Sacred Self.md`, a ~1000-line product and prompt-design document. Spec and plan are in `docs/superpowers/`.
 
 ## What the design doc defines

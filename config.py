@@ -1,3 +1,5 @@
+from datetime import timedelta, timezone
+
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -15,8 +17,8 @@ class Settings(BaseSettings):
     # Set a number (e.g. 0.5) only for non-reasoning models such as gpt-4o-mini.
     temperature: float | None = None
     # temperature: float | None = 0.5
-    # Four answers of at most MAX_WORDS words need roughly 700 tokens, plus headroom.
-    max_output_tokens: int = 1200
+    # v1: four answers of at most MAX_WORDS words need roughly 700 tokens. v2 adds a question to each, plus headroom.
+    max_output_tokens: int = 2000
     # Seconds to wait for the model before giving up and inviting a retry.
     request_timeout: float = 60.0
 
@@ -42,6 +44,15 @@ DB_PATH = "data/answers.db"
 MIN_WORDS = 70
 MAX_WORDS = 120
 
+# --- v2 (prompts from docs/Reset- Sacred Self.md) ---
+ENABLE_V1 = True
+ENABLE_V2 = True
+# Words per perspective for v2 (v1 uses MIN_WORDS / MAX_WORDS above).
+V2_MIN_WORDS = 30
+V2_MAX_WORDS = 50
+V2_HEADING = "v2"
+ERROR_V2 = "The v2 answers could not be generated. The v1 answers above are unaffected."
+
 # --- UI text ---
 APP_TITLE = "Sacred Self"
 APP_SUBTITLE = "Share a situation or issue. See it through four perspectives."
@@ -61,6 +72,8 @@ HISTORY_HEADING = "History"
 HISTORY_EMPTY = "No saved requests yet."
 HISTORY_SNIPPET_CHARS = 90
 HISTORY_BOX_HEIGHT = 420
+DISPLAY_TZ = timezone(timedelta(hours=5, minutes=30))
+DISPLAY_TZ_LABEL = "IST"
 BACK_LABEL = "← Back"
 DETAIL_NOT_FOUND = "That request was not found. Go back and pick one from the history."
 COPY_HEADING = "Copy question and answers"
@@ -72,6 +85,7 @@ ERROR_EMPTY_INPUT = "Please describe your situation first."
 ERROR_INPUT_TOO_LONG = "Please keep your message under {max} characters."
 ERROR_TIMEOUT = "This is taking longer than expected. Please try again."
 ERROR_MODEL_NOT_SET = "No model is configured. Set MODEL_NAME (and your provider API key) in .env. See README.md."
+ERROR_NO_VERSION = "Both ENABLE_V1 and ENABLE_V2 are off in config.py. Turn one on."
 ERROR_GENERIC = (
     "Something went wrong while generating the perspectives. Please try again."
 )

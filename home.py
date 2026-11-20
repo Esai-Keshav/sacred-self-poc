@@ -4,7 +4,7 @@ import streamlit as st
 
 import config
 import db
-from agent import UserError, answers_dict, get_perspectives
+from agent import UserError, answers_dict, get_perspectives, get_perspectives_v2
 from ui import render_answers
 
 logger = logging.getLogger(__name__)
@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 # does not wipe it.
 RESULT_KEY = "result"
 FALLBACK_KEY = "fallback"
+RESULT_V2_KEY = "result_v2"
 QUESTION_KEY = "question"
 
 st.title(config.APP_TITLE)
@@ -33,14 +34,35 @@ if situation:
     # failed attempt.
     st.session_state.pop(RESULT_KEY, None)
     st.session_state.pop(FALLBACK_KEY, None)
+    st.session_state.pop(RESULT_V2_KEY, None)
     st.session_state[QUESTION_KEY] = situation.strip()
     try:
-        with st.spinner(config.SPINNER_TEXT):
-            output = get_perspectives(situation)
-        if output is None:  # the model returned FALLBACK: not a personal issue
-            st.session_state[FALLBACK_KEY] = True
-        else:
-            st.session_state[RESULT_KEY] = answers_dict(output)
+        if not (config.ENABLE_V1 or config.ENABLE_V2):
+            st.warning(config.ERROR_NO_VERSION)
+        elif config.ENABLE_V1:
+            with st.spinner(config.SPINNER_TEXT):
+                output, request_id = get_perspectives(situation)
+            if output is None:  # the model returned FALLBACK: not a personal issue
+                st.session_state[FALLBACK_KEY] = True
+            else:
+                st.session_state[RESULT_KEY] = answers_dict(output)
+                if config.ENABLE_V2:
+                    # A v2 failure must not hide the v1 answers.
+                    try:
+                        with st.spinner(config.SPINNER_TEXT):
+                            st.session_state[RESULT_V2_KEY], _ = get_perspectives_v2(
+                                situation, request_id
+                            )
+                    except Exception:
+                        logger.exception("v2 generation failed")
+                        st.warning(config.ERROR_V2)
+        else:  # v1 off: v2 alone, saved as its own row
+            with st.spinner(config.SPINNER_TEXT):
+                answers_v2, _ = get_perspectives_v2(situation, None)
+            if answers_v2 is None:
+                st.session_state[FALLBACK_KEY] = True
+            else:
+                st.session_state[RESULT_V2_KEY] = answers_v2
     except UserError as e:
         st.warning(str(e))
     except Exception:
@@ -48,13 +70,20 @@ if situation:
         st.error(config.ERROR_GENERIC)
 
 answers = st.session_state.get(RESULT_KEY)
-if answers is not None or st.session_state.get(FALLBACK_KEY):
+answers_v2 = st.session_state.get(RESULT_V2_KEY)
+if answers is not None or answers_v2 is not None or st.session_state.get(FALLBACK_KEY):
     # The input box clears after sending, so show what was asked.
     st.markdown("> " + st.session_state[QUESTION_KEY].replace("\n", "\n> "))
 if st.session_state.get(FALLBACK_KEY):
     st.info(config.FALLBACK_MESSAGE)
-elif answers is not None:
-    render_answers(answers)
+else:
+    if answers is not None:
+        render_answers(answers)
+    if answers_v2 is not None:
+        if answers is not None:
+            st.divider()
+        st.subheader(config.V2_HEADING)
+        render_answers(answers_v2)
 
 st.caption(config.DISCLAIMER)
 st.caption(config.SAVE_NOTICE)
@@ -71,7 +100,7 @@ else:
             question = " ".join(row["situation"].split())
             if len(question) > config.HISTORY_SNIPPET_CHARS:
                 question = question[: config.HISTORY_SNIPPET_CHARS].rstrip() + "…"
-            when = row["created_at"][:16].replace("T", " ") + " UTC"
+            when = db.format_when(row["created_at"])
             if st.button(
                 question,
                 key=f"open_{row['id']}",
