@@ -5,8 +5,13 @@ from functools import lru_cache
 from typing import Literal
 
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent, ModelRetry, RunContext
-from pydantic_ai.messages import ModelResponse
+from pydantic_ai import Agent, ModelRetry, RunContext, capture_run_messages
+from pydantic_ai.messages import (
+    ModelRequest,
+    ModelResponse,
+    RetryFeedbackPart,
+    ToolReturnPart,
+)
 
 import config
 import db
@@ -18,7 +23,7 @@ logger = logging.getLogger(__name__)
 class WillingnessCard(BaseModel):
     # Filled in this order: the model writes the body first, then the hook that teases it.
     expanded: str = Field(
-        description=f"{config.EXPANDED_MIN_WORDS}-{config.EXPANDED_MAX_WORDS} words, exactly 2 short paragraphs separated by a blank line. Appreciate one specific thing the person did and build belief in their capacity. Do not state the task or a deadline, except on a crisis card."
+        description=f"{config.EXPANDED_MIN_WORDS}-{config.EXPANDED_MAX_WORDS} words, exactly 2 short paragraphs separated by a blank line. Do not open by restating the person's message. Appreciate one specific thing the person did and build belief in their capacity. Do not state the task or a deadline, except on a crisis card."
     )
     hook: str = Field(
         description=f"{config.HOOK_MIN_WORDS}-{config.HOOK_MAX_WORDS} words, in exactly two sentences: 8 to 10 words, then 14 to 18 words. Wisdom that reframes the situation. Do not name the task, except on a crisis card. Do not repeat the person's message."
@@ -119,6 +124,27 @@ def get_agent() -> Agent[None, WillingnessCard | Fallback]:
     return agent
 
 
+def retry_reasons(messages) -> list[str]:
+    """Why the model was asked to try again, one entry per retry."""
+    reasons = []
+    for message in messages:
+        if not isinstance(message, ModelRequest):
+            continue
+        for part in message.parts:
+            # Structured output retries are tool returns marked "retried".
+            if isinstance(part, RetryFeedbackPart) or (
+                isinstance(part, ToolReturnPart) and part.outcome == "retried"
+            ):
+                content = part.content
+                if not isinstance(content, str):  # schema errors arrive as a list
+                    content = "; ".join(
+                        f"{'.'.join(map(str, error['loc']))}: {error['msg']}"
+                        for error in content
+                    )
+                reasons.append(content)
+    return reasons
+
+
 def _run(situation: str):
     """Validate the input, call the model, print usage. Returns (text, result, cost)."""
     text = situation.strip()
@@ -129,26 +155,30 @@ def _run(situation: str):
             config.ERROR_INPUT_TOO_LONG.format(max=config.settings.max_input_chars)
         )
 
-    try:
-        result = get_agent().run_sync(
-            text,
-            model_settings={
-                "max_tokens": config.settings.max_output_tokens,
-                **(
-                    {"thinking": config.REASONING_EFFORT}
-                    if config.REASONING_EFFORT
-                    else {}
-                ),
-                **(
-                    {"temperature": config.settings.temperature}
-                    if config.settings.temperature is not None
-                    else {}
-                ),
-            },
-            timeout=config.settings.request_timeout,
-        )
-    except TimeoutError:
-        raise UserError(config.ERROR_TIMEOUT) from None
+    with capture_run_messages() as messages:
+        try:
+            result = get_agent().run_sync(
+                text,
+                model_settings={
+                    "max_tokens": config.settings.max_output_tokens,
+                    **(
+                        {"thinking": config.REASONING_EFFORT}
+                        if config.REASONING_EFFORT
+                        else {}
+                    ),
+                    **(
+                        {"temperature": config.settings.temperature}
+                        if config.settings.temperature is not None
+                        else {}
+                    ),
+                },
+                timeout=config.settings.request_timeout,
+            )
+        except TimeoutError:
+            raise UserError(config.ERROR_TIMEOUT) from None
+        finally:  # also runs when retries are used up, which is when the reason matters most
+            for number, reason in enumerate(retry_reasons(messages), start=1):
+                print(f"[retry {number}] {reason}")
 
     usage = result.usage
     print(usage)

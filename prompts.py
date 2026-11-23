@@ -9,7 +9,11 @@ PROMPT_DIR = Path(__file__).parent / "prompt"
 COMMON_FILE = "language_common.md"
 PERSPECTIVE = "willingness"
 
-LANGUAGE_FILES = {"v1": "language_v1.md", "v2": "language_v2.md", "v4": "language_v4.md"}
+LANGUAGE_FILES = {
+    "v1": "language_v1.md",
+    "v2": "language_v2.md",
+    "v4": "language_v4.md",
+}
 
 # Placed above the language guide so the model knows which rules win when they clash.
 PRECEDENCE = (
@@ -62,30 +66,31 @@ EXAMPLES_V4: list[dict] = [
     {
         "thought": EXAMPLES[0]["thought"],
         "expanded": (
-            "You give and you give, and nobody says a word. That is a hard place. Of course "
-            "you want to be seen.\n\n"
-            "Maybe your husband has stopped noticing. Maybe the words do not come easily. How your husband responds "
-            "is not yours to carry. Your need can stay soft and steady, without any fight "
-            "at all. There is nothing wrong in wanting this."
+            "The day ends. The work is done. And nobody mentions it. After enough evenings "
+            "like that, you start to wonder if anyone is looking. There is nothing wrong in "
+            "wanting a thank you.\n\n"
+            "Maybe your husband has stopped noticing. Maybe the words do not come easily. "
+            "How your husband responds is not yours to carry. But your need can stay soft "
+            "and steady, without any fight at all."
         ),
         "hook": (
-            "Wanting to be seen is not a weakness. You have given for so long, and what you "
-            "need deserves a place in this home too."
+            "Wanting to be seen is not a weakness. You have cared for this family, and what "
+            "you need deserves a place in it too."
         ),
         "practise": "In 3 days, tell your husband one thing you would like noticed.",
     },
     {
         "thought": EXAMPLES[1]["thought"],
         "expanded": (
-            "They got the promotion and you did not. You may have clapped for them "
-            "while a little part of you curled inward. You feel small right now.\n\n"
-            "This jealousy is only your care for growing. Their rise has not taken "
-            "anything from you. You are still learning, and you can learn from them too. "
-            "You have time to find your way."
+            "Each time that new title comes up, you feel smaller. You wanted to grow too. "
+            "There is no shame in feeling jealous about that.\n\n"
+            "Their rise has not taken anything from you. And look closely, because jealousy "
+            "points to what you want next. Even the person you envy can teach you something. "
+            "You have time to find your own way here."
         ),
         "hook": (
-            "Jealousy only shows how much you care about growing. Their "
-            "rise has not closed your road, and you can still learn from it."
+            "Jealousy only shows how much you care about growing. Another person's promotion "
+            "has not closed your road, and there is still plenty for you to learn."
         ),
         "practise": EXAMPLES[1]["practise"],
     },
@@ -114,7 +119,9 @@ def language_guide() -> str:
         )
     text = (PROMPT_DIR / LANGUAGE_FILES[version]).read_text(encoding="utf-8")
     text = text.replace("{{perspective}}", PERSPECTIVE)
-    return text.replace("{{user_context}}", "the person's message, sent as the next message")
+    return text.replace(
+        "{{user_context}}", "the person's message, sent as the next message"
+    )
 
 
 def _render_examples() -> str:

@@ -122,6 +122,32 @@ def test_v4_examples_avoid_stock_permission():
             assert phrase not in text, phrase
 
 
+def test_v4_examples_avoid_overused_phrases():
+    for example in EXAMPLES_V4:
+        text = f"{example['hook']} {example['expanded']}".lower()
+        for phrase in ("of course", "what if"):
+            assert phrase not in text, phrase
+
+
+def test_v4_guide_does_not_prescribe_overused_phrases():
+    guide = (PROMPT_DIR / "language_v4.md").read_text(encoding="utf-8").lower()
+    assert guide.count("of course") == 1  # only the ban itself
+    assert guide.count("what if") == 1
+
+
+def test_v4_examples_do_not_open_by_restating():
+    for opener in ("you give and you give", "they got the promotion"):
+        for example in EXAMPLES_V4:
+            assert not example["expanded"].lower().startswith(opener)
+
+
+def test_v4_example_hooks_follow_sentence_split():
+    for example in EXAMPLES_V4:
+        first, second = [s for s in example["hook"].split(". ")]
+        assert 8 <= word_count(first) <= 10, first
+        assert 14 <= word_count(second) <= 18, second
+
+
 def test_v4_has_no_repeated_self_talk():
     assert "tell yourself" not in v4_text()
 

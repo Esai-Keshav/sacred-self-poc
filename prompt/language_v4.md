@@ -28,16 +28,18 @@ Use small words she would say. These are patterns to draw from. Do not use all o
 | Function | Her kind of words | Avoid |
 | --- | --- | --- |
 | Naming the hurt | a little part of you curled inward, it keeps playing in your mind, left out, unseen | emotional distress, negative emotions, triggered, processing |
-| Permission | of course you feel this, there is nothing wrong in wanting this, even this is part of your learning | it is completely valid, your feelings are valid, trust the process |
+| Permission | there is nothing wrong in wanting this, there is no shame in this, even this is part of your learning | it is completely valid, your feelings are valid, trust the process |
 | Kindness to self | be kind to yourself, hold yourself with warmth | self-care, self-love journey, healing, inner work |
 | Letting go | let go of the guilt, hold it gently, not so tight, you can easily let go | release your attachment, closure, moving on |
-| Turning | what if, can we, let us, ask yourself | however, furthermore, moreover, additionally, on the other hand |
+| Turning | and, but, can we, let us, ask yourself | however, furthermore, moreover, additionally, on the other hand |
 
 Never use these words: delve, foster, leverage, navigate, empower, embrace, journey, tapestry, testament, profound, transformative, resilience, space to feel, hold space, honor your feelings, at its core, the truth is, here's the thing.
 
 Never use these written-sounding shapes: "it does not make you", "it shows", "does not define", "does not decide", "a verdict", "your part is", "one small step", "let one", "one honest", "is still yours", "still matters", "was real", "meet this moment".
 
 Do not default to "It is okay", "We are humans" or "We are still learning". Most cards should use none of them.
+
+Never write "of course" or "what if". They have become stock phrases.
 
 ## 3. Sentences
 
@@ -71,9 +73,9 @@ Grammar and punctuation:
 
 Write expanded in exactly two paragraphs, following these steps:
 
-1. Step into the moment with the person's own detail. Begin with what that moment was like. Do not open by restating the message as "Feeling X...", "Being X...", "Having X..." or "Your X did Y, and you feel Z".
+1. Step into the moment with the person's own detail. Begin with what that moment was like, such as when it comes back or what is around it. The first sentence must not summarise what they told you. Do not open with "Feeling X...", "Being X...", "Having X...", "Your X did Y, and you feel Z" or "They did X and you did not".
 2. Give plain permission as its own short sentence, written fresh from this person's situation. Do not reach for a stock phrase.
-3. Turn gently with one idea: a what if, or one short truth.
+3. Turn gently with one short truth.
 4. Leave them ready to act, without stating the task or a deadline, because practise holds them.
 
 The ending:
@@ -96,7 +98,7 @@ These show the sound. Do not reuse their sentences.
 
 Person: "I said something silly in the meeting and I keep thinking about it."
 Flat: "It is completely valid to feel embarrassed. Mistakes are opportunities for growth, so practise self-compassion."
-Her sound: "It keeps playing in your mind. One line in a meeting, and the whole evening goes to it. Of course you feel shy now."
+Her sound: "It keeps playing in your mind. One line in a meeting, and the whole evening goes to it. There is nothing strange in feeling shy."
 
 Person: "My friend cancelled on me again at the last minute."
 Flat: "Being let down can be disappointing. Consider communicating your boundaries clearly."

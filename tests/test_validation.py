@@ -1,6 +1,10 @@
 import pytest
-from pydantic_ai import ModelRetry
+from pydantic_ai import Agent, ModelRetry
+from pydantic_ai.exceptions import UnexpectedModelBehavior
+from pydantic_ai.messages import ModelResponse, ToolCallPart
+from pydantic_ai.models.function import FunctionModel
 
+import agent as agent_module
 import config
 from agent import (
     WillingnessCard,
@@ -102,3 +106,26 @@ def test_one_question_in_expanded_is_allowed():
 def test_two_questions_in_expanded_retry():
     with pytest.raises(ModelRetry, match="more than one question"):
         check_punctuation(card(expanded="What is this? What else?"))
+
+
+@pytest.mark.parametrize(
+    ("args", "reason"),
+    [
+        ({"expanded": "a", "hook": "b", "practise": "c"}, "The hook is too long."),
+        ({"expanded": "a", "practise": "c"}, "hook: Field required"),
+    ],
+)
+def test_run_prints_retry_reason_when_retries_run_out(monkeypatch, capsys, args, reason):
+    def reply(messages, info):
+        return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, args)])
+
+    test_agent = Agent(FunctionModel(reply), output_type=WillingnessCard, retries=1)
+
+    @test_agent.output_validator
+    def _always_retry(output):
+        raise ModelRetry("The hook is too long.")
+
+    monkeypatch.setattr(agent_module, "get_agent", lambda: test_agent)
+    with pytest.raises(UnexpectedModelBehavior):
+        agent_module._run("My friend ignored me.")
+    assert f"[retry 1] {reason}" in capsys.readouterr().out
