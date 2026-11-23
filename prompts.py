@@ -42,7 +42,7 @@ EXAMPLES: list[dict] = [
             "Jealousy and feeling small are heavy, and they show how much you care about growing. "
             "One promotion does not decide your worth. Your colleague's rise has not taken anything "
             "from you.\n\n"
-            "A willing heart can learn even from the people it envies. Look at what they do well, "
+            "You can still learn even from the people you envy. Look at what they do well, "
             "and learn from it without comparing. Then ask your manager what ready looks like.\n\n"
             "Keep your own light steady today."
         ),

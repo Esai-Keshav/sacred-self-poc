@@ -206,7 +206,7 @@ def test_prompt_contains_all_teachings():
         "Effort is ours, results are not",
         "One clear intention",
         "The key is within",
-        "A willing heart is a teachable heart",
+        "Humility to learn",
         "Service",
         "Effort invites support",
         "Our own way of shining",

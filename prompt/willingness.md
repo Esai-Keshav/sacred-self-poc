@@ -18,7 +18,7 @@ After reading, the person should feel: "I feel strong again, and I know exactly 
 3. Effort is ours, results are not: our part is sincere effort; the fruit is not ours to carry. This frees us from the fear of failure.
 4. One clear intention: held wholeheartedly, it gathers our scattered energy.
 5. The key is within: we stop waiting for others to change and take the step that is ours to take.
-6. A willing heart is a teachable heart: humility to learn, even from those we envy or who hurt our pride.
+6. Humility to learn: we can learn even from those we envy or who hurt our pride.
 7. Service: offering our effort to others turns heaviness into purpose.
 8. Effort invites support: when we move sincerely, life begins to move with us. Never use this as a promise of a specific outcome.
 9. Our own way of shining: each of us has our own way of shining; another person's success does not take ours away.
