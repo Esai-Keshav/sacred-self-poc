@@ -5,23 +5,28 @@ import config
 
 PROMPT_DIR = Path(__file__).parent / "prompt"
 
-LANGUAGE_FILES = {"v1": "language_v1.md", "v2": "language_v2.md"}
+# Rules shared by every perspective. Each perspective adds one <name>.md file.
+COMMON_FILE = "language_common.md"
+PERSPECTIVE = "willingness"
+
+LANGUAGE_FILES = {"v1": "language_v1.md", "v2": "language_v2.md", "v4": "language_v4.md"}
 
 # Placed above the language guide so the model knows which rules win when they clash.
 PRECEDENCE = (
-    "The guide below sets wording and tone only. If it conflicts with Safety, Scope, "
-    "Grounding or Card fields above, those win. Example responses inside the guide show "
-    "voice only; their length, number of questions and layout do not apply."
+    "The guide below sets wording and tone only. If it conflicts with Who you are, Safety, "
+    "Scope, Grounding or Card fields above, those win. Example responses inside the guide "
+    "show voice only; their length, number of questions and layout do not apply."
 )
 
 EXAMPLES: list[dict] = [
     {
         "thought": "My husband doesn't appreciate anything I do for the family.",
         "expanded": (
-            "Your giving has been steady, and it hurts when it goes unnoticed. Wanting to be "
-            "seen is a fair need, not a weakness. Your part is the sincere effort of saying what "
-            "you need, calmly. How he responds is not yours to carry. Each honest try teaches "
-            "you what words land and when."
+            "Feeling unseen after years of giving quietly is a real ache, and it shows how much "
+            "you care. Wanting to be noticed is a fair need, not a weakness.\n\n"
+            "Your part is speaking what you need, calmly and clearly. How he responds is not yours "
+            "to carry. You do not have to wait for the perfect moment, only a calm one.\n\n"
+            "One clear sentence can open a door."
         ),
         "hook": (
             "Your giving has been steady, and it hurts to feel unseen. Strength grows when you "
@@ -30,28 +35,59 @@ EXAMPLES: list[dict] = [
         "practise": (
             "In 3 days, choose one calm moment and tell him one thing you would like him to notice."
         ),
-        "say_it": (
-            "I do so much for our family, and it would mean a lot to me if you noticed."
-        ),
     },
     {
         "thought": "My colleague got promoted instead of me. I feel jealous and inferior.",
         "expanded": (
-            "Jealousy and feeling inferior are heavy to carry, and it is honest of you to name "
-            "them. One promotion does not decide your worth or your ability. Your part is steady "
-            "effort, and the outcome is not yours to hold. Look at the process: what did your "
-            "colleague do regularly that you could try?"
+            "Jealousy and feeling small are heavy, and they show how much you care about growing. "
+            "One promotion does not decide your worth. Your colleague's rise has not taken anything "
+            "from you.\n\n"
+            "A willing heart can learn even from the people it envies. Look at what they do well, "
+            "and learn from it without comparing. Then ask your manager what ready looks like.\n\n"
+            "Keep your own light steady today."
         ),
         "hook": (
-            "This promotion is a mirror, showing where you are ready to grow. Learn one clear "
-            "thing from your colleague's path this week, and let it steady you."
+            "Jealousy shows where your heart is ready to grow. Notice one clear thing your "
+            "colleague does well this week, and let it steady you today."
         ),
         "practise": (
             "Within 5 days, ask your manager what a strong case for the next level would look like."
         ),
-        "say_it": (
-            "I feel jealous, and I am still willing to learn what it takes to grow."
+    },
+]
+
+# Same thoughts as EXAMPLES, in the spoken v4 voice. Examples sit last in the prompt,
+# so old-voice examples would pull the model away from the v4 guide.
+EXAMPLES_V4: list[dict] = [
+    {
+        "thought": EXAMPLES[0]["thought"],
+        "expanded": (
+            "You give and you give, and nobody says a word. It stings, doesn't it? Of course "
+            "you want to be seen. Anyone would.\n\n"
+            "Maybe he has stopped noticing. Maybe he does not know how to say it. How he responds "
+            "is not yours to carry. Your need can stay soft and steady, without any fight "
+            "at all. You are allowed to want this."
         ),
+        "hook": (
+            "Wanting to be seen is not a weakness. You have given for so long, and what you "
+            "need deserves a place in this home too."
+        ),
+        "practise": "In 3 days, tell him one thing you would like him to notice.",
+    },
+    {
+        "thought": EXAMPLES[1]["thought"],
+        "expanded": (
+            "They got the promotion and you did not. How many times have we clapped for someone "
+            "while a little part of us curled inward? Anyone would feel this.\n\n"
+            "This jealousy is only your care for growing. Their rise has not taken "
+            "anything from you. You are still learning, and you can learn from them too. "
+            "You have time to find your way."
+        ),
+        "hook": (
+            "Jealousy only shows how much you care about growing. Anyone would feel it. Their "
+            "rise has not closed your road, and you can still learn from it."
+        ),
+        "practise": EXAMPLES[1]["practise"],
     },
 ]
 
@@ -77,20 +113,20 @@ def language_guide() -> str:
             f"PROMPT_VERSION must be one of {', '.join(LANGUAGE_FILES)}, not {version!r}."
         )
     text = (PROMPT_DIR / LANGUAGE_FILES[version]).read_text(encoding="utf-8")
-    text = text.replace("{{perspective}}", "willingness")
+    text = text.replace("{{perspective}}", PERSPECTIVE)
     return text.replace("{{user_context}}", "the person's message, sent as the next message")
 
 
 def _render_examples() -> str:
     blocks = []
-    for number, example in enumerate(EXAMPLES, start=1):
+    examples = EXAMPLES_V4 if config.PROMPT_VERSION == "v4" else EXAMPLES
+    for number, example in enumerate(examples, start=1):
         blocks.append(
             f"### Example {number}\n"
             f'Person: "{example["thought"]}"\n'
             f"- expanded: {example['expanded']}\n"
             f"- hook: {example['hook']}\n"
-            f"- practise: {example['practise']}\n"
-            f"- say_it: {example['say_it']}"
+            f"- practise: {example['practise']}"
         )
     return "\n\n".join(blocks)
 
@@ -101,10 +137,12 @@ def today_line(now: datetime) -> str:
 
 
 def build_system_prompt() -> str:
-    willingness = _fill((PROMPT_DIR / "willingness.md").read_text(encoding="utf-8"))
+    common = _fill((PROMPT_DIR / COMMON_FILE).read_text(encoding="utf-8"))
+    perspective = _fill((PROMPT_DIR / f"{PERSPECTIVE}.md").read_text(encoding="utf-8"))
     return "\n\n".join(
         [
-            willingness,
+            common,
+            perspective,
             "## Language guide",
             PRECEDENCE,
             language_guide(),

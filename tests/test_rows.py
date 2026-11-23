@@ -4,7 +4,6 @@ CARD = {
     "hook": "a hook",
     "expanded": "an expanded body",
     "practise": "In 3 days, do one thing.",
-    "say_it": "I can try this.",
 }
 
 
@@ -16,7 +15,7 @@ def test_build_card_row_has_exact_columns():
         "hook": "a hook",
         "expanded": "an expanded body",
         "practise": "In 3 days, do one thing.",
-        "say_it": "I can try this.",
+        "say_it": "",
         "input_tokens": 10,
         "output_tokens": 20,
         "cost_usd": 0.5,
@@ -24,18 +23,17 @@ def test_build_card_row_has_exact_columns():
 
 
 def test_build_feedback_row_keeps_comment():
-    row = build_feedback_row(7, 1, None, None, -1, None, "helpful")
+    row = build_feedback_row(7, 1, None, None, -1, "helpful")
     assert row == {
         "card_id": 7,
         "overall": 1,
         "hook": None,
         "expanded": None,
         "practise": -1,
-        "say_it": None,
         "comment": "helpful",
     }
 
 
 def test_build_feedback_row_empty_comment_is_none():
-    row = build_feedback_row(7, 1, None, None, None, None, "")
+    row = build_feedback_row(7, 1, None, None, None, "")
     assert row["comment"] is None

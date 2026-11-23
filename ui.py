@@ -11,7 +11,6 @@ FEEDBACK_ITEMS = [
     ("hook", "Hook"),
     ("expanded", "Expanded"),
     ("practise", "Practise"),
-    ("say_it", "Say it"),
 ]
 
 
@@ -28,15 +27,12 @@ def format_when(created_at: str) -> str:
 
 
 def render_card(card: dict) -> None:
-    """The whole card at once: hook, body, practise and say-it."""
+    """The whole card at once: hook, body and practise."""
     with st.container(border=True):
         st.markdown(f"**{card['hook']}**")
         st.write(card["expanded"])
         st.markdown(f"**{config.PRACTISE_LABEL}**")
         st.write(card["practise"])
-        if config.INCLUDE_SAY_IT:
-            st.markdown(f"**{config.SAY_IT_LABEL}**")
-            st.markdown(f"> {card['say_it']}")
 
 
 def feedback_line(row: dict) -> str:
@@ -62,9 +58,6 @@ def render_feedback(card_id: int, feedback_rows: list[dict]) -> None:
     with st.expander(config.FEEDBACK_HEADING):
         votes = []
         for name, label in FEEDBACK_ITEMS:
-            if name == "say_it" and not config.INCLUDE_SAY_IT:
-                votes.append(None)
-                continue
             label_col, vote_col = st.columns([1, 2])
             label_col.markdown(f"**{label}**")
             votes.append(to_vote(vote_col.feedback("thumbs", key=f"{name}_{card_id}")))

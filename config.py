@@ -28,17 +28,22 @@ settings = Settings()
 # --- Model ---
 # Pydantic AI "provider:model" string. The matching API key goes in .env.
 MODEL_NAME = "openai:gpt-6-luna"
+# MODEL_NAME = "anthropic:claude-haiku-5-5"
 # Reasoning effort: "minimal", "low", "medium" or "high". None = do not send it.
 REASONING_EFFORT = "low"
 
-# --- Language guide: v1 = Master System Prompt, v2 = Core Language & Voice ---
-PROMPT_VERSION = "v2"
+# --- Language guide: v1 = Master System Prompt, v2 = Core Language & Voice,
+# v4 = Spoken Language & Voice (from the Nidra transcripts) ---
+PROMPT_VERSION = "v4"
+# PROMPT_VERSION = "v3"
+# PROMPT_VERSION = "v2"
+# PROMPT_VERSION = "v1"
 
 # --- Card length (words) ---
-HOOK_MIN_WORDS = 25
+HOOK_MIN_WORDS = 20
 HOOK_MAX_WORDS = 30
-EXPANDED_MIN_WORDS = 50
-EXPANDED_MAX_WORDS = 60
+EXPANDED_MIN_WORDS = 60
+EXPANDED_MAX_WORDS = 70
 
 # --- History ---
 HISTORY_LIMIT = 50
@@ -46,16 +51,12 @@ DISPLAY_TZ = timezone(timedelta(hours=5, minutes=30))
 DISPLAY_TZ_LABEL = "IST"
 
 # --- UI text ---
-# False hides the Say it line on cards and its feedback row. The model still writes it.
-INCLUDE_SAY_IT = False
-# INCLUDE_SAY_IT = True
 APP_TITLE = "Sacred Self"
 INPUT_PLACEHOLDER = (
     "My child keeps making the same mistakes despite repeated corrections."
 )
 SPINNER_TEXT = "Reflecting..."
 PRACTISE_LABEL = "Practise"
-SAY_IT_LABEL = "Say it"
 FEEDBACK_HEADING = "Your feedback"
 FEEDBACK_SO_FAR = "Feedback so far"
 FEEDBACK_NONE = "No feedback yet."

@@ -24,7 +24,8 @@ def build_card_row(
         "hook": card["hook"],
         "expanded": card["expanded"],
         "practise": card["practise"],
-        "say_it": card["say_it"],
+        # The column is still NOT NULL in Supabase; new cards have no say_it.
+        "say_it": "",
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "cost_usd": cost_usd,
@@ -37,7 +38,6 @@ def build_feedback_row(
     hook: int | None,
     expanded: int | None,
     practise: int | None,
-    say_it: int | None,
     comment: str | None,
 ) -> dict:
     return {
@@ -46,7 +46,6 @@ def build_feedback_row(
         "hook": hook,
         "expanded": expanded,
         "practise": practise,
-        "say_it": say_it,
         "comment": comment or None,
     }
 

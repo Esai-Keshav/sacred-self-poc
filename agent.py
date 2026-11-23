@@ -17,16 +17,13 @@ logger = logging.getLogger(__name__)
 class WillingnessCard(BaseModel):
     # Filled in this order: the model writes the body first, then the hook that teases it.
     expanded: str = Field(
-        description=f"{config.EXPANDED_MIN_WORDS}-{config.EXPANDED_MAX_WORDS} words, 2-3 short paragraphs. Appreciate one specific thing the person did, build belief in their capacity, and focus on one process step they can try."
+        description=f"{config.EXPANDED_MIN_WORDS}-{config.EXPANDED_MAX_WORDS} words, exactly 2 short paragraphs separated by a blank line. Appreciate one specific thing the person did and build belief in their capacity. Do not state the task or a deadline, except on a crisis card."
     )
     hook: str = Field(
-        description=f"{config.HOOK_MIN_WORDS}-{config.HOOK_MAX_WORDS} words. A specific pull that teases the strongest idea in expanded. Do not repeat the person's message."
+        description=f"{config.HOOK_MIN_WORDS}-{config.HOOK_MAX_WORDS} words. One line of wisdom that reframes the situation. Do not name the task, except on a crisis card. Do not repeat the person's message."
     )
     practise: str = Field(
-        description="One sentence with a deadline, such as 'In 3 days, ...'. One concrete task the person can do from their own words."
-    )
-    say_it: str = Field(
-        description="One first-person sentence the person says aloud, in their own voice, using details from their message."
+        description="One sentence with a deadline, such as 'In 3 days, ...'. The only place that names the task: one verb and one object, never two tasks joined with 'and'."
     )
 
 
@@ -54,17 +51,31 @@ def check_hook_length(hook: str) -> None:
         )
 
 
+def check_expanded(expanded: str) -> None:
+    n = word_count(expanded)
+    if n > config.EXPANDED_MAX_WORDS:
+        raise ModelRetry(
+            f"expanded has {n} words. Cut it to at most {config.EXPANDED_MAX_WORDS} words."
+        )
+    if ";" in expanded:
+        raise ModelRetry("expanded has a semicolon. Use a full stop instead.")
+
+
 def check_punctuation(card: WillingnessCard) -> None:
     """No exclamation marks anywhere. No question marks outside expanded, and at most one there."""
     fields = card.model_dump()
     for name, text in fields.items():
         if "!" in text:
             raise ModelRetry(f"The {name} has an exclamation mark. Remove it.")
-    for name in ("hook", "practise", "say_it"):
+    for name in ("hook", "practise"):
         if "?" in fields[name]:
-            raise ModelRetry(f"The {name} has a question mark. Only expanded may ask one soft question.")
+            raise ModelRetry(
+                f"The {name} has a question mark. Only expanded may ask one soft question."
+            )
     if fields["expanded"].count("?") > 1:
-        raise ModelRetry("expanded asks more than one question. Keep at most one soft question.")
+        raise ModelRetry(
+            "expanded asks more than one question. Keep at most one soft question."
+        )
 
 
 @lru_cache
@@ -73,6 +84,7 @@ def get_agent() -> Agent[None, WillingnessCard | Fallback]:
         config.MODEL_NAME,
         output_type=[WillingnessCard, Fallback],
         system_prompt=build_system_prompt(),
+        retries=3,
     )
 
     @agent.system_prompt
@@ -84,6 +96,7 @@ def get_agent() -> Agent[None, WillingnessCard | Fallback]:
     def _check_card(ctx: RunContext[None], output):
         if isinstance(output, WillingnessCard):
             check_hook_length(output.hook)
+            check_expanded(output.expanded)
             check_punctuation(output)
         return output
 
@@ -105,7 +118,11 @@ def _run(situation: str):
             text,
             model_settings={
                 "max_tokens": config.settings.max_output_tokens,
-                **({"thinking": config.REASONING_EFFORT} if config.REASONING_EFFORT else {}),
+                **(
+                    {"thinking": config.REASONING_EFFORT}
+                    if config.REASONING_EFFORT
+                    else {}
+                ),
                 **(
                     {"temperature": config.settings.temperature}
                     if config.settings.temperature is not None

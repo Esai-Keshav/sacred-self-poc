@@ -2,7 +2,13 @@ import pytest
 from pydantic_ai import ModelRetry
 
 import config
-from agent import WillingnessCard, check_hook_length, check_punctuation, word_count
+from agent import (
+    WillingnessCard,
+    check_expanded,
+    check_hook_length,
+    check_punctuation,
+    word_count,
+)
 
 
 def card(**overrides) -> WillingnessCard:
@@ -10,7 +16,6 @@ def card(**overrides) -> WillingnessCard:
         "expanded": "A calm body of text.",
         "hook": " ".join(["word"] * config.HOOK_MIN_WORDS),
         "practise": "In 3 days, pick one calm moment.",
-        "say_it": "I can ask for what I need.",
     }
     fields.update(overrides)
     return WillingnessCard(**fields)
@@ -31,17 +36,32 @@ def test_hook_length_out_of_range_retries(n):
         check_hook_length(" ".join(["word"] * n))
 
 
+def test_expanded_at_max_is_accepted():
+    check_expanded(" ".join(["word"] * config.EXPANDED_MAX_WORDS))
+
+
+def test_expanded_over_max_retries():
+    n = config.EXPANDED_MAX_WORDS + 1
+    with pytest.raises(ModelRetry, match=f"{n} words"):
+        check_expanded(" ".join(["word"] * n))
+
+
+def test_expanded_semicolon_retries():
+    with pytest.raises(ModelRetry, match="semicolon"):
+        check_expanded("This hurts; you know it.")
+
+
 def test_plain_card_passes_punctuation_check():
     check_punctuation(card())
 
 
-@pytest.mark.parametrize("field", ["hook", "practise", "say_it", "expanded"])
+@pytest.mark.parametrize("field", ["hook", "practise", "expanded"])
 def test_exclamation_mark_anywhere_retries(field):
     with pytest.raises(ModelRetry, match="exclamation"):
         check_punctuation(card(**{field: "Wow!"}))
 
 
-@pytest.mark.parametrize("field", ["hook", "practise", "say_it"])
+@pytest.mark.parametrize("field", ["hook", "practise"])
 def test_question_mark_outside_expanded_retries(field):
     with pytest.raises(ModelRetry, match="question mark"):
         check_punctuation(card(**{field: "Really?"}))
