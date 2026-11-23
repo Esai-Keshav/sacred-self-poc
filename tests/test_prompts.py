@@ -99,6 +99,29 @@ def test_v4_examples_avoid_stock_closers():
             assert phrase not in text, phrase
 
 
+def test_examples_assume_no_gender():
+    pattern = r"\b(he|she|him|her|his|hers|himself|herself)\b"
+    for example in EXAMPLES + EXAMPLES_V4:
+        for name in ("hook", "expanded", "practise"):
+            assert re.search(pattern, example[name], re.IGNORECASE) is None, example[name]
+
+
+def test_common_prompt_forbids_assuming_gender():
+    common = (PROMPT_DIR / "language_common.md").read_text(encoding="utf-8")
+    assert "Never assume gender" in common
+
+
+def test_v4_guide_and_examples_have_no_sting():
+    assert re.search(r"\bsting(s|ing)?\b", v4_text()) is None
+
+
+def test_v4_examples_avoid_stock_permission():
+    for example in EXAMPLES_V4:
+        text = f"{example['hook']} {example['expanded']}".lower()
+        for phrase in ("you are allowed", "anyone would"):
+            assert phrase not in text, phrase
+
+
 def test_v4_has_no_repeated_self_talk():
     assert "tell yourself" not in v4_text()
 

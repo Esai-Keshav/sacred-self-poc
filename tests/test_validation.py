@@ -6,7 +6,9 @@ from agent import (
     WillingnessCard,
     check_expanded,
     check_hook_length,
+    check_no_gender,
     check_punctuation,
+    check_stock_word,
     word_count,
 )
 
@@ -49,6 +51,32 @@ def test_expanded_over_max_retries():
 def test_expanded_semicolon_retries():
     with pytest.raises(ModelRetry, match="semicolon"):
         check_expanded("This hurts; you know it.")
+
+
+@pytest.mark.parametrize("text", ["It can sting.", "It Stings, doesn't it?", "A stinging word."])
+def test_stock_word_retries(text):
+    with pytest.raises(ModelRetry, match="sting"):
+        check_stock_word(text)
+
+
+@pytest.mark.parametrize("text", ["You keep resisting.", "An interesting day.", "A lasting bond."])
+def test_stock_word_ignores_longer_words(text):
+    check_stock_word(text)
+
+
+@pytest.mark.parametrize(
+    "text", ["She left you out.", "Tell him today.", "It was her dinner.", "His words hurt."]
+)
+def test_gendered_pronoun_retries(text):
+    with pytest.raises(ModelRetry, match="gender"):
+        check_no_gender(text)
+
+
+@pytest.mark.parametrize(
+    "text", ["Your friend left you out.", "They may not know.", "The other day, here at home."]
+)
+def test_neutral_text_passes_gender_check(text):
+    check_no_gender(text)
 
 
 def test_plain_card_passes_punctuation_check():

@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime
 from functools import lru_cache
 from typing import Literal
@@ -61,6 +62,19 @@ def check_expanded(expanded: str) -> None:
         raise ModelRetry("expanded has a semicolon. Use a full stop instead.")
 
 
+def check_stock_word(text: str) -> None:
+    if re.search(r"\bsting(s|ing)?\b", text, re.IGNORECASE):
+        raise ModelRetry("Do not use the word 'sting'. Name this person's hurt in plain words.")
+
+
+def check_no_gender(text: str) -> None:
+    if re.search(r"\b(he|she|him|her|his|hers|himself|herself)\b", text, re.IGNORECASE):
+        raise ModelRetry(
+            "Do not assume gender. Replace he, she, him, her or his with the role, "
+            "such as 'your friend', or with 'they'."
+        )
+
+
 def check_punctuation(card: WillingnessCard) -> None:
     """No exclamation marks anywhere. No question marks outside expanded, and at most one there."""
     fields = card.model_dump()
@@ -84,7 +98,7 @@ def get_agent() -> Agent[None, WillingnessCard | Fallback]:
         config.MODEL_NAME,
         output_type=[WillingnessCard, Fallback],
         system_prompt=build_system_prompt(),
-        retries=3,
+        retries=5,
     )
 
     @agent.system_prompt
@@ -97,6 +111,8 @@ def get_agent() -> Agent[None, WillingnessCard | Fallback]:
         if isinstance(output, WillingnessCard):
             check_hook_length(output.hook)
             check_expanded(output.expanded)
+            check_stock_word(f"{output.hook} {output.expanded}")
+            check_no_gender(f"{output.hook} {output.expanded} {output.practise}")
             check_punctuation(output)
         return output
 

@@ -30,7 +30,7 @@ with tab_new:
             else:
                 if card_id is None:
                     st.warning(config.ERROR_SAVE)
-                st.session_state["last"] = {"card": card.model_dump(), "id": card_id}
+                st.session_state["last"] = {"thought": thought, "card": card.model_dump(), "id": card_id}
         except UserError as e:
             st.warning(str(e))
         except Exception:
@@ -40,6 +40,7 @@ with tab_new:
     # Kept in session_state so the card survives reruns caused by feedback clicks.
     last = st.session_state.get("last")
     if last:
+        st.markdown("> " + last["thought"].replace("\n", "\n> "))
         render_card(last["card"])
         if last["id"] is not None:
             render_feedback(last["id"], [], key_prefix="home_")

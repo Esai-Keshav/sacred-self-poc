@@ -24,7 +24,7 @@ EXAMPLES: list[dict] = [
         "expanded": (
             "Feeling unseen after years of giving quietly is a real ache, and it shows how much "
             "you care. Wanting to be noticed is a fair need, not a weakness.\n\n"
-            "Your part is speaking what you need, calmly and clearly. How he responds is not yours "
+            "Your part is speaking what you need, calmly and clearly. How your husband responds is not yours "
             "to carry. You do not have to wait for the perfect moment, only a calm one.\n\n"
             "One clear sentence can open a door."
         ),
@@ -33,7 +33,7 @@ EXAMPLES: list[dict] = [
             "ask for what you need, one clear sentence at a time."
         ),
         "practise": (
-            "In 3 days, choose one calm moment and tell him one thing you would like him to notice."
+            "In 3 days, choose one calm moment and tell your husband one thing you would like noticed."
         ),
     },
     {
@@ -62,29 +62,29 @@ EXAMPLES_V4: list[dict] = [
     {
         "thought": EXAMPLES[0]["thought"],
         "expanded": (
-            "You give and you give, and nobody says a word. It stings, doesn't it? Of course "
-            "you want to be seen. Anyone would.\n\n"
-            "Maybe he has stopped noticing. Maybe he does not know how to say it. How he responds "
+            "You give and you give, and nobody says a word. That is hard, isn't it? Of course "
+            "you want to be seen.\n\n"
+            "Maybe your husband has stopped noticing. Maybe the words do not come easily. How your husband responds "
             "is not yours to carry. Your need can stay soft and steady, without any fight "
-            "at all. You are allowed to want this."
+            "at all. There is nothing wrong in wanting this."
         ),
         "hook": (
             "Wanting to be seen is not a weakness. You have given for so long, and what you "
             "need deserves a place in this home too."
         ),
-        "practise": "In 3 days, tell him one thing you would like him to notice.",
+        "practise": "In 3 days, tell your husband one thing you would like noticed.",
     },
     {
         "thought": EXAMPLES[1]["thought"],
         "expanded": (
             "They got the promotion and you did not. How many times have we clapped for someone "
-            "while a little part of us curled inward? Anyone would feel this.\n\n"
+            "while a little part of us curled inward? You wanted this too.\n\n"
             "This jealousy is only your care for growing. Their rise has not taken "
             "anything from you. You are still learning, and you can learn from them too. "
             "You have time to find your way."
         ),
         "hook": (
-            "Jealousy only shows how much you care about growing. Anyone would feel it. Their "
+            "Jealousy only shows how much you care about growing. It is a human thing. Their "
             "rise has not closed your road, and you can still learn from it."
         ),
         "practise": EXAMPLES[1]["practise"],
