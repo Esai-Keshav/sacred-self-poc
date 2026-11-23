@@ -126,6 +126,10 @@ def test_v4_has_no_repeated_self_talk():
     assert "tell yourself" not in v4_text()
 
 
+def test_v4_has_no_yes_run():
+    assert re.search(r"\byes,", v4_text()) is None
+
+
 def test_examples_obey_punctuation_rules():
     for example in EXAMPLES + EXAMPLES_V4:
         for name in ("hook", "practise", "expanded"):
@@ -172,6 +176,7 @@ def test_prompt_speaks_as_lakshana_in_first_person():
     prompt = build_system_prompt()
     assert "You are Lakshana Shravan" in prompt
     assert "in the first person" in prompt
+    assert "warrior" not in prompt.lower()
     for story_name in ("Joint family", "Ice House", "Homeschooling"):
         assert story_name in prompt
     assert "Sacred Self" in prompt
@@ -282,6 +287,12 @@ def test_v4_has_no_religious_words():
 def test_v4_has_no_em_dashes_outside_title():
     body = v4_text().split("\n", 1)[1]
     assert "—" not in body
+
+
+def test_v4_has_no_tag_question_or_copied_line():
+    text = v4_text()
+    for phrase in ("isn't it", "doesn't it", "you wanted this", "how many times"):
+        assert phrase not in text
 
 
 def test_v4_has_no_bedtime_sign_offs():

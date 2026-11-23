@@ -21,7 +21,7 @@ class WillingnessCard(BaseModel):
         description=f"{config.EXPANDED_MIN_WORDS}-{config.EXPANDED_MAX_WORDS} words, exactly 2 short paragraphs separated by a blank line. Appreciate one specific thing the person did and build belief in their capacity. Do not state the task or a deadline, except on a crisis card."
     )
     hook: str = Field(
-        description=f"{config.HOOK_MIN_WORDS}-{config.HOOK_MAX_WORDS} words. One line of wisdom that reframes the situation. Do not name the task, except on a crisis card. Do not repeat the person's message."
+        description=f"{config.HOOK_MIN_WORDS}-{config.HOOK_MAX_WORDS} words, in exactly two sentences: 8 to 10 words, then 14 to 18 words. Wisdom that reframes the situation. Do not name the task, except on a crisis card. Do not repeat the person's message."
     )
     practise: str = Field(
         description="One sentence with a deadline, such as 'In 3 days, ...'. The only place that names the task: one verb and one object, never two tasks joined with 'and'."

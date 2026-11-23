@@ -62,7 +62,7 @@ EXAMPLES_V4: list[dict] = [
     {
         "thought": EXAMPLES[0]["thought"],
         "expanded": (
-            "You give and you give, and nobody says a word. That is hard, isn't it? Of course "
+            "You give and you give, and nobody says a word. That is a hard place. Of course "
             "you want to be seen.\n\n"
             "Maybe your husband has stopped noticing. Maybe the words do not come easily. How your husband responds "
             "is not yours to carry. Your need can stay soft and steady, without any fight "
@@ -77,14 +77,14 @@ EXAMPLES_V4: list[dict] = [
     {
         "thought": EXAMPLES[1]["thought"],
         "expanded": (
-            "They got the promotion and you did not. How many times have we clapped for someone "
-            "while a little part of us curled inward? You wanted this too.\n\n"
+            "They got the promotion and you did not. You may have clapped for them "
+            "while a little part of you curled inward. You feel small right now.\n\n"
             "This jealousy is only your care for growing. Their rise has not taken "
             "anything from you. You are still learning, and you can learn from them too. "
             "You have time to find your way."
         ),
         "hook": (
-            "Jealousy only shows how much you care about growing. It is a human thing. Their "
+            "Jealousy only shows how much you care about growing. Their "
             "rise has not closed your road, and you can still learn from it."
         ),
         "practise": EXAMPLES[1]["practise"],
