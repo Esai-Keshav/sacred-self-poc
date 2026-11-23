@@ -141,6 +141,19 @@ def test_v4_examples_do_not_open_by_restating():
             assert not example["expanded"].lower().startswith(opener)
 
 
+def test_v4_examples_vary_and_avoid_banned_shapes():
+    openers = [" ".join(example["expanded"].lower().split()[:2]) for example in EXAMPLES_V4]
+    assert len(openers) == len(set(openers)), openers
+    banned = (
+        "it does not make you", "it shows", "does not define", "does not decide", "a verdict",
+        "your part is", "one small step", "let one", "one honest", "it is okay", "we are humans",
+        "journey", "healing", "clarity", "next step", "at a time", ";", "—",
+    )
+    for example in EXAMPLES_V4:
+        text = f"{example['hook']} {example['expanded']} {example['practise']}".lower()
+        assert not [phrase for phrase in banned if phrase in text], example["thought"]
+
+
 def test_v4_example_hooks_follow_sentence_split():
     for example in EXAMPLES_V4:
         first, second = [s for s in example["hook"].split(". ")]

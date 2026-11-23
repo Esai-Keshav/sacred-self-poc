@@ -94,6 +94,164 @@ EXAMPLES_V4: list[dict] = [
         ),
         "practise": EXAMPLES[1]["practise"],
     },
+    {
+        "thought": "My son is in Class 9 and refuses to study. Every evening ends in a fight.",
+        "expanded": (
+            "Evening comes and the books come out. Within minutes, the voices go up. And the "
+            "fight stays with you long after. There is no shame in being worried for your "
+            "child.\n\n"
+            "Maybe your son feels the pressure more than the lessons. Maybe something in class "
+            "has become hard. When we push a river, it pushes back. You can keep caring and "
+            "loosen your grip a little."
+        ),
+        "hook": (
+            "Your worry comes from how much you love your child. A calmer home can hold that "
+            "worry, and your son can feel safe enough to try."
+        ),
+        "practise": "By Thursday, ask your son which subject feels hardest right now.",
+    },
+    {
+        "thought": (
+            "I look after my father since his stroke and work full time. "
+            "I get angry with him and then feel guilty."
+        ),
+        "expanded": (
+            "The office ends and the second shift begins at home. Somewhere in that long day, "
+            "your temper slips. Then the guilt sits with you. There is no shame in reaching "
+            "your limit.\n\n"
+            "Look at what you carry every single day. A person who cares this much also runs "
+            "out sometimes. Your father needs you, and you need looking after too. You were "
+            "never built to do this alone."
+        ),
+        "hook": (
+            "Anger on a long day takes nothing from your love. You have stayed beside your "
+            "father through all of this, and you can lean on someone too."
+        ),
+        "practise": "Within 7 days, ask one relative to sit with your father for an hour.",
+    },
+    {
+        "thought": "I was laid off at 46 after 19 years in one company. I haven't told my family yet.",
+        "expanded": (
+            "Nineteen years of the same road to the same desk, and then it stops. Now you carry "
+            "that news home and keep it behind your face. That is a lonely thing to hold.\n\n"
+            "There is no shame in needing a little time. The company let go of you. All that "
+            "you learned in those years did not leave with the job. And you need not carry "
+            "this by yourself."
+        ),
+        "hook": (
+            "Nineteen years of work cannot be taken back by anyone. What you learned and who "
+            "you became walk with you into whatever comes after this."
+        ),
+        "practise": "Within 5 days, tell one person at home about losing the job.",
+    },
+    {
+        "thought": "We broke up three months ago and I still check their profile every night.",
+        "expanded": (
+            "It gets quiet, and the phone is in your hand again. One look, you say, and "
+            "then you are scrolling. Three months is not long for a heart. There is nothing "
+            "foolish in this ache.\n\n"
+            "But each look opens it all over again. A wound cannot close if we keep lifting "
+            "the bandage. You cared deeply, and that care can slowly turn back toward you."
+        ),
+        "hook": (
+            "Missing someone is only love with nowhere to go. You can keep what was good in "
+            "it and still give your evenings back to yourself."
+        ),
+        "practise": "Within 2 days, mute their profile on your phone.",
+    },
+    {
+        "thought": "I got a job offer in Bengaluru, but my parents would be alone in Madurai. I can't decide.",
+        "expanded": (
+            "You open the offer letter and feel glad for a moment. Then you picture the house "
+            "in Madurai, and the gladness gets mixed with worry. There is nothing selfish in "
+            "wanting both.\n\n"
+            "We want the choice that hurts nobody, and sometimes that choice is not there. So "
+            "notice which road feels tight and which feels light. Your love for your parents "
+            "goes with you, whichever way you turn."
+        ),
+        "hook": (
+            "Both pulls in you come from a good place. You want to grow and you want to care, "
+            "and one clear choice can hold both."
+        ),
+        "practise": "By Friday, list what you would gain and lose in each city.",
+    },
+    {
+        "thought": "I sent the wrong invoice to a client and my boss found out. I keep replaying it.",
+        "expanded": (
+            "You pressed send, and that was that. Now that moment keeps coming back, and each "
+            "time you feel it again. There is no shame in slipping at work.\n\n"
+            "A wrong invoice is an error on paper. You are far more than that one bad moment. "
+            "And the replay cannot change what was sent. But the care behind it can go into "
+            "your very next piece of work."
+        ),
+        "hook": (
+            "One wrong invoice says very little about your whole work. The worry you feel "
+            "comes from wanting to do right by the people you work for."
+        ),
+        "practise": "By Wednesday, write a short checklist for sending invoices.",
+    },
+    {
+        "thought": "I failed NEET for the second time and my relatives keep asking about my rank.",
+        "expanded": (
+            "The phone rings, or someone drops by, and the same question comes again. And each "
+            "time, a little part of you curls inward. There is no shame in being hurt by "
+            "this.\n\n"
+            "Maybe your relatives ask out of habit. Maybe they do not know how it lands. Two "
+            "attempts took real courage from you. And a rank is one number on one day."
+        ),
+        "hook": (
+            "Trying twice at something this hard takes a brave heart. A rank can tell you "
+            "about one exam, and nothing about what you can still become."
+        ),
+        "practise": "By Sunday, write one short reply for relatives who ask about your rank.",
+    },
+    {
+        "thought": "My mother-in-law criticises my cooking in front of guests and everyone stays silent.",
+        "expanded": (
+            "The plates go around, and then that remark comes. Nobody at the table says a "
+            "word. And you are left sitting with it. There is nothing wrong in wanting respect "
+            "in your own home.\n\n"
+            "Maybe your mother-in-law speaks without thinking. Maybe this is how they were "
+            "spoken to once. You cannot change their habit. But your voice can be soft and "
+            "firm together, and you can use it."
+        ),
+        "hook": (
+            "A remark at the table cannot measure your worth. You can stay gentle with your "
+            "family and still stand up for your own dignity."
+        ),
+        "practise": "Within 4 days, ask for any cooking comments to come to you privately.",
+    },
+    {
+        "thought": "I run a small tailoring shop. Since the new mall opened, customers have reduced and I'm losing hope.",
+        "expanded": (
+            "The shutter goes up and you look at the road. The hours pass with fewer people "
+            "stepping in. Watching that every day wears a person down. There is no shame in "
+            "losing heart.\n\n"
+            "But you have kept this shop running with your own skill. A mall cannot know a "
+            "customer the way you do. Some people still want someone who remembers their "
+            "measurements. Your work has a place."
+        ),
+        "hook": (
+            "A big mall cannot copy the care in your stitching. Your own way of working has "
+            "its own shine, and the people you serve can feel it."
+        ),
+        "practise": "Within 3 days, phone one regular customer to ask what they need stitched.",
+    },
+    {
+        "thought": "Since I retired and my children moved abroad, the house is so quiet. I feel useless.",
+        "expanded": (
+            "The morning comes, and nothing is waiting for you. The rooms that were once full "
+            "are silent now. There is nothing strange in missing being needed.\n\n"
+            "All those years, people leaned on you. What you know did not retire with you. "
+            "Somewhere close by, a person could use exactly that. And giving it may lift this "
+            "heaviness a little, the way opening a window changes a room."
+        ),
+        "hook": (
+            "A quiet house has not emptied what you carry inside. You have years of knowing "
+            "how to do things, and someone near you could learn from them."
+        ),
+        "practise": "By Saturday, offer to teach a neighbour's child something you know well.",
+    },
 ]
 
 
