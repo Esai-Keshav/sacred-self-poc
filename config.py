@@ -65,7 +65,6 @@ FEEDBACK_SUBMIT_LABEL = "Send feedback"
 FEEDBACK_THANKS = "Thanks. Your feedback is saved."
 TAB_NEW_LABEL = "New card"
 TAB_HISTORY_LABEL = "History"
-FEEDBACK_HINT = "Rate this card and leave a comment in the History tab."
 HISTORY_EMPTY = "No saved cards yet."
 FALLBACK_MESSAGE = "I can't help with it."
 

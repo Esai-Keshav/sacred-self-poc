@@ -47,7 +47,7 @@ def feedback_line(row: dict) -> str:
     return " · ".join(parts)
 
 
-def render_feedback(card_id: int, feedback_rows: list[dict]) -> None:
+def render_feedback(card_id: int, feedback_rows: list[dict], key_prefix: str = "") -> None:
     """Filled feedback for this card, then the thumbs form, an optional comment and Send."""
     st.markdown(f"**{config.FEEDBACK_SO_FAR}**")
     lines = [line for line in (feedback_line(row) for row in feedback_rows) if line]
@@ -60,9 +60,9 @@ def render_feedback(card_id: int, feedback_rows: list[dict]) -> None:
         for name, label in FEEDBACK_ITEMS:
             label_col, vote_col = st.columns([1, 2])
             label_col.markdown(f"**{label}**")
-            votes.append(to_vote(vote_col.feedback("thumbs", key=f"{name}_{card_id}")))
-        comment = st.text_area(config.FEEDBACK_COMMENT_LABEL, key=f"comment_{card_id}")
-        if st.button(config.FEEDBACK_SUBMIT_LABEL, key=f"send_{card_id}"):
+            votes.append(to_vote(vote_col.feedback("thumbs", key=f"{key_prefix}{name}_{card_id}")))
+        comment = st.text_area(config.FEEDBACK_COMMENT_LABEL, key=f"{key_prefix}comment_{card_id}")
+        if st.button(config.FEEDBACK_SUBMIT_LABEL, key=f"{key_prefix}send_{card_id}"):
             try:
                 db.save_feedback(db.build_feedback_row(card_id, *votes, comment))
                 st.success(config.FEEDBACK_THANKS)

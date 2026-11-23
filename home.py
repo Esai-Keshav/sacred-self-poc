@@ -21,6 +21,7 @@ with tab_new:
     )
 
     if thought:
+        st.session_state.pop("last", None)
         try:
             with st.spinner(config.SPINNER_TEXT):
                 card, card_id = get_card(thought)
@@ -29,14 +30,19 @@ with tab_new:
             else:
                 if card_id is None:
                     st.warning(config.ERROR_SAVE)
-                render_card(card.model_dump())
-                if card_id is not None:
-                    st.caption(config.FEEDBACK_HINT)
+                st.session_state["last"] = {"card": card.model_dump(), "id": card_id}
         except UserError as e:
             st.warning(str(e))
         except Exception:
             logger.exception("Card generation failed")
             st.error(config.ERROR_GENERIC)
+
+    # Kept in session_state so the card survives reruns caused by feedback clicks.
+    last = st.session_state.get("last")
+    if last:
+        render_card(last["card"])
+        if last["id"] is not None:
+            render_feedback(last["id"], [], key_prefix="home_")
 
 with tab_history:
     try:
