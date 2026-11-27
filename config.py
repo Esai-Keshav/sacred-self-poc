@@ -43,8 +43,8 @@ PROMPT_VERSION = "v5"
 
 # --- Perspectives: key (prompt file name and DB value) -> label. Order is display order. ---
 PERSPECTIVES = {"willingness": "Willingness", "love_joy": "Love & Joy"}
-# SHOW_LOVE = True  # False: no Love & Joy card, and no model call for it
-SHOW_LOVE = False  # False: no Love & Joy card, and no model call for it
+SHOW_LOVE = True  # False: no Love & Joy card, and no model call for it
+# SHOW_LOVE = False  # False: no Love & Joy card, and no model call for it
 
 # --- Card length (words) ---
 HOOK_MIN_WORDS = 20
