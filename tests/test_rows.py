@@ -8,9 +8,10 @@ CARD = {
 
 
 def test_build_card_row_has_exact_columns():
-    row = build_card_row("my thought", CARD, "openai:x", 10, 20, 0.5)
+    row = build_card_row("my thought", CARD, "openai:x", 10, 20, 0.5, "love_joy")
     assert row == {
         "thought": "my thought",
+        "perspective": "love_joy",
         "model": "openai:x",
         "hook": "a hook",
         "expanded": "an expanded body",

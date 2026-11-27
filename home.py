@@ -4,7 +4,7 @@ import streamlit as st
 
 import config
 import db
-from agent import UserError, get_card
+from agent import UserError, get_cards
 from ui import format_when, render_card, render_feedback
 
 logger = logging.getLogger(__name__)
@@ -24,26 +24,34 @@ with tab_new:
         st.session_state.pop("last", None)
         try:
             with st.spinner(config.SPINNER_TEXT):
-                card, card_id = get_card(thought)
-            if card is None:
+                results = get_cards(thought)
+            cards = [
+                {**card.model_dump(), "perspective": perspective, "id": card_id}
+                for perspective, card, card_id, _ in results
+                if card is not None
+            ]
+            if any(failed for *_, failed in results):
+                st.warning(config.ERROR_PARTIAL)
+            elif not cards:
                 st.info(config.FALLBACK_MESSAGE)
-            else:
-                if card_id is None:
-                    st.warning(config.ERROR_SAVE)
-                st.session_state["last"] = {"thought": thought, "card": card.model_dump(), "id": card_id}
+            if any(c["id"] is None for c in cards):
+                st.warning(config.ERROR_SAVE)
+            if cards:
+                st.session_state["last"] = {"thought": thought, "cards": cards}
         except UserError as e:
             st.warning(str(e))
         except Exception:
             logger.exception("Card generation failed")
             st.error(config.ERROR_GENERIC)
 
-    # Kept in session_state so the card survives reruns caused by feedback clicks.
+    # Kept in session_state so the cards survive reruns caused by feedback clicks.
     last = st.session_state.get("last")
     if last:
         st.markdown("> " + last["thought"].replace("\n", "\n> "))
-        render_card(last["card"])
-        if last["id"] is not None:
-            render_feedback(last["id"], [], key_prefix="home_")
+        for card in last["cards"]:
+            render_card(card)
+            if card["id"] is not None:
+                render_feedback(card["id"], [], key_prefix="home_")
 
 with tab_history:
     try:

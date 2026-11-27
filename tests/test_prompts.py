@@ -7,6 +7,7 @@ import config
 from prompts import (
     EXAMPLES,
     EXAMPLES_V4,
+    EXAMPLES_V5,
     PRECEDENCE,
     PROMPT_DIR,
     build_system_prompt,
@@ -20,12 +21,12 @@ def word_count(text: str) -> int:
 
 
 def test_hooks_within_word_range():
-    for example in EXAMPLES + EXAMPLES_V4:
+    for example in EXAMPLES + EXAMPLES_V4 + EXAMPLES_V5:
         assert config.HOOK_MIN_WORDS <= word_count(example["hook"]) <= config.HOOK_MAX_WORDS
 
 
 def test_expanded_within_word_range():
-    for example in EXAMPLES + EXAMPLES_V4:
+    for example in EXAMPLES + EXAMPLES_V4 + EXAMPLES_V5:
         assert (
             config.EXPANDED_MIN_WORDS
             <= word_count(example["expanded"])
@@ -101,7 +102,7 @@ def test_v4_examples_avoid_stock_closers():
 
 def test_examples_assume_no_gender():
     pattern = r"\b(he|she|him|her|his|hers|himself|herself)\b"
-    for example in EXAMPLES + EXAMPLES_V4:
+    for example in EXAMPLES + EXAMPLES_V4 + EXAMPLES_V5:
         for name in ("hook", "expanded", "practise"):
             assert re.search(pattern, example[name], re.IGNORECASE) is None, example[name]
 
@@ -170,9 +171,10 @@ def test_v4_has_no_yes_run():
 
 
 def test_examples_obey_punctuation_rules():
-    for example in EXAMPLES + EXAMPLES_V4:
-        for name in ("hook", "practise", "expanded"):
+    for example in EXAMPLES + EXAMPLES_V4 + EXAMPLES_V5:
+        for name in ("practise", "expanded"):
             assert "!" not in example[name], (name, example[name])
+        assert "!" not in example["hook"][:-1], example["hook"]
         for name in ("hook", "practise"):
             assert "?" not in example[name], (name, example[name])
         assert example["expanded"].count("?") <= 1
@@ -227,10 +229,12 @@ def test_prompt_is_secular():
         assert spiritual_word not in prompt, spiritual_word
 
 
-def test_prompt_contains_example_thoughts_and_limits():
+def test_prompt_contains_example_thoughts_and_limits(monkeypatch):
+    monkeypatch.setattr(config, "PROMPT_VERSION", "v5")
     prompt = build_system_prompt()
-    for example in EXAMPLES + EXAMPLES_V4:
+    for example in EXAMPLES_V5:
         assert example["thought"] in prompt
+    assert str(config.PRACTISE_MIN_WORDS) in prompt
     assert str(config.HOOK_MIN_WORDS) in prompt
     assert str(config.HOOK_MAX_WORDS) in prompt
 
@@ -239,6 +243,7 @@ def test_prompt_has_no_unfilled_placeholders():
     prompt = build_system_prompt()
     assert "{HOOK_" not in prompt
     assert "{EXP_" not in prompt
+    assert "{PRACTISE_" not in prompt
     assert "{{" not in prompt
 
 
@@ -360,12 +365,18 @@ def test_common_comes_before_perspective_with_safety_first():
     assert prompt.index("## Card fields") < prompt.index("# Willingness bot")
 
 
-@pytest.mark.parametrize("version", ["v1", "v2", "v4"])
+@pytest.mark.parametrize("version", ["v1", "v2", "v4", "v5"])
 def test_every_version_includes_common_rules(monkeypatch, version):
     monkeypatch.setattr(config, "PROMPT_VERSION", version)
     prompt = build_system_prompt()
     for heading in ("## Safety", "## Scope", "## Grounding", "## Practise", "## Card fields"):
         assert prompt.count(heading) == 1, heading
+
+
+def test_willingness_prompt_makes_willingness_compulsory():
+    prompt = build_system_prompt("willingness")
+    assert "the reader must reach Willingness" in prompt
+    assert "Receive the feeling in one short line" not in prompt
 
 
 def test_perspective_file_holds_no_common_sections():
@@ -377,3 +388,75 @@ def test_perspective_file_holds_no_common_sections():
 def test_today_line_formats_date():
     assert today_line(datetime(2026, 11, 20)) == "Today is Friday, 20 November 2026."
     assert today_line(datetime(2026, 11, 5)) == "Today is Thursday, 5 November 2026."
+
+
+def test_v5_practise_follows_five_checkpoints():
+    starts = ("within", "today", "by", "before", "for the next", "the next time")
+    for example in EXAMPLES_V5:
+        practise = example["practise"]
+        assert config.PRACTISE_MIN_WORDS <= word_count(practise) <= config.PRACTISE_MAX_WORDS, practise
+        assert practise.lower().startswith(starts), practise  # context
+        assert re.search(r"\b(instead of|rather than|hold back)\b", practise.lower()), practise  # change
+        paragraphs = practise.split("\n\n")
+        assert 2 <= len(paragraphs) <= 3, practise
+        if len(paragraphs) == 3:
+            assert paragraphs[1].startswith('You can say: "'), practise
+
+
+def test_v5_practise_holds_one_action():
+    second_task = r"\band (tell|write|ask|offer|send|list|choose|practise|set)\b"
+    for example in EXAMPLES_V5:
+        assert re.search(second_task, example["practise"].lower()) is None, example["practise"]
+
+
+def test_common_prompt_lists_practise_checkpoints_and_conditions():
+    common = (PROMPT_DIR / "language_common.md").read_text(encoding="utf-8")
+    for word in ("**Context:**", "**Change:**", "**Concrete instruction:**", "**Continuation:**", "**Capability:**"):
+        assert word in common, word
+    for rule in ("Only one action", "Respectful of others' autonomy", "No follow-up question", "No unrealistic promises"):
+        assert rule in common, rule
+
+
+def test_crisis_practise_meets_length():
+    common = (PROMPT_DIR / "language_common.md").read_text(encoding="utf-8")
+    start = common.index('"Today, contact one person')
+    text = common[start : common.index('strong."', start) + len('strong."')]
+    assert config.PRACTISE_MIN_WORDS <= word_count(text) <= config.PRACTISE_MAX_WORDS, word_count(text)
+
+
+def test_v5_examples_include_dialogue():
+    assert sum('You can say: "' in e["practise"] for e in EXAMPLES_V5) >= 4
+
+
+def test_v5_expanded_has_exactly_two_paragraphs():
+    for example in EXAMPLES_V5:
+        assert len(example["expanded"].split("\n\n")) == 2, example["expanded"]
+
+
+def test_v5_example_hooks_follow_sentence_split():
+    for example in EXAMPLES_V5:
+        first, second = example["hook"].split(". ")
+        assert 8 <= word_count(first) <= 10, first
+        assert 14 <= word_count(second) <= 18, second
+
+
+def test_v5_examples_name_the_task_only_in_practise():
+    for example in EXAMPLES_V5:
+        words = re.findall(r"[a-z']+", example["practise"].lower())
+        runs = {" ".join(words[i : i + 3]) for i in range(len(words) - 2)}
+        body = " ".join(re.findall(r"[a-z']+", f"{example['hook']} {example['expanded']}".lower()))
+        assert not [run for run in runs if run in body], example["practise"]
+
+
+def test_v5_prompt_renders_v5_examples(monkeypatch):
+    monkeypatch.setattr(config, "PROMPT_VERSION", "v5")
+    prompt = build_system_prompt()
+    assert "High-Energy Willingness Voice" in prompt
+    assert EXAMPLES_V5[0]["hook"] in prompt
+    assert EXAMPLES_V4[0]["hook"] not in prompt
+
+
+def test_v5_examples_have_no_semicolons_or_dashes():
+    for example in EXAMPLES_V5:
+        text = " ".join(example[n] for n in ("hook", "expanded", "practise"))
+        assert ";" not in text and "\u2014" not in text, example["thought"]

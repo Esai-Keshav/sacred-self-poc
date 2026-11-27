@@ -17,9 +17,11 @@ def build_card_row(
     input_tokens: int | None,
     output_tokens: int | None,
     cost_usd: float | None,
+    perspective: str,
 ) -> dict:
     return {
         "thought": thought,
+        "perspective": perspective,
         "model": model,
         "hook": card["hook"],
         "expanded": card["expanded"],
@@ -57,8 +59,11 @@ def save_card(
     input_tokens: int | None,
     output_tokens: int | None,
     cost_usd: float | None,
+    perspective: str,
 ) -> int:
-    row = build_card_row(thought, card, model, input_tokens, output_tokens, cost_usd)
+    row = build_card_row(
+        thought, card, model, input_tokens, output_tokens, cost_usd, perspective
+    )
     return client().table("cards").insert(row).execute().data[0]["id"]
 
 

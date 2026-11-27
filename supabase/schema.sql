@@ -2,6 +2,7 @@ create table cards (
   id bigint generated always as identity primary key,
   created_at timestamptz not null default now(),
   thought text not null,
+  perspective text not null default 'willingness',
   model text not null,
   hook text not null,
   expanded text not null,
@@ -39,3 +40,6 @@ create policy "anyone can read feedback" on feedback
 
 create policy "anyone can add feedback" on feedback
   for insert to anon with check (true);
+
+-- Existing database: run this once before deploying the second perspective.
+-- alter table cards add column perspective text not null default 'willingness';

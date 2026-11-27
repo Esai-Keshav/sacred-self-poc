@@ -7,24 +7,25 @@ from pydantic_ai.models.function import FunctionModel
 import agent as agent_module
 import config
 from agent import (
-    WillingnessCard,
+    Card,
     check_expanded,
     check_hook_length,
     check_no_gender,
+    check_practise,
     check_punctuation,
     check_stock_word,
     word_count,
 )
 
 
-def card(**overrides) -> WillingnessCard:
+def card(**overrides) -> Card:
     fields = {
         "expanded": "A calm body of text.",
         "hook": " ".join(["word"] * config.HOOK_MIN_WORDS),
-        "practise": "In 3 days, pick one calm moment.",
+        "practise": " ".join(["word"] * config.PRACTISE_MIN_WORDS),
     }
     fields.update(overrides)
-    return WillingnessCard(**fields)
+    return Card(**fields)
 
 
 def test_word_count_splits_on_whitespace():
@@ -50,6 +51,17 @@ def test_expanded_over_max_retries():
     n = config.EXPANDED_MAX_WORDS + 1
     with pytest.raises(ModelRetry, match=f"{n} words"):
         check_expanded(" ".join(["word"] * n))
+
+
+@pytest.mark.parametrize("n", [config.PRACTISE_MIN_WORDS, config.PRACTISE_MAX_WORDS])
+def test_practise_length_in_range_is_accepted(n):
+    check_practise(" ".join(["word"] * n))
+
+
+@pytest.mark.parametrize("n", [config.PRACTISE_MIN_WORDS - 1, config.PRACTISE_MAX_WORDS + 1])
+def test_practise_length_out_of_range_retries(n):
+    with pytest.raises(ModelRetry, match=f"{n} words"):
+        check_practise(" ".join(["word"] * n))
 
 
 def test_expanded_semicolon_retries():
@@ -87,8 +99,18 @@ def test_plain_card_passes_punctuation_check():
     check_punctuation(card())
 
 
-@pytest.mark.parametrize("field", ["hook", "practise", "expanded"])
-def test_exclamation_mark_anywhere_retries(field):
+def test_hook_may_end_with_one_exclamation_mark():
+    check_punctuation(card(hook="Go again!"))
+
+
+@pytest.mark.parametrize("hook", ["Wow! Go again.", "Go again!!"])
+def test_hook_exclamation_mark_not_at_end_retries(hook):
+    with pytest.raises(ModelRetry, match="exclamation"):
+        check_punctuation(card(hook=hook))
+
+
+@pytest.mark.parametrize("field", ["practise", "expanded"])
+def test_exclamation_mark_outside_hook_retries(field):
     with pytest.raises(ModelRetry, match="exclamation"):
         check_punctuation(card(**{field: "Wow!"}))
 
@@ -119,13 +141,13 @@ def test_run_prints_retry_reason_when_retries_run_out(monkeypatch, capsys, args,
     def reply(messages, info):
         return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, args)])
 
-    test_agent = Agent(FunctionModel(reply), output_type=WillingnessCard, retries=1)
+    test_agent = Agent(FunctionModel(reply), output_type=Card, retries=1)
 
     @test_agent.output_validator
     def _always_retry(output):
         raise ModelRetry("The hook is too long.")
 
-    monkeypatch.setattr(agent_module, "get_agent", lambda: test_agent)
+    monkeypatch.setattr(agent_module, "get_agent", lambda perspective: test_agent)
     with pytest.raises(UnexpectedModelBehavior):
-        agent_module._run("My friend ignored me.")
-    assert f"[retry 1] {reason}" in capsys.readouterr().out
+        agent_module._run("My friend ignored me.", "love_joy")
+    assert f"[love_joy] [retry 1] {reason}" in capsys.readouterr().out

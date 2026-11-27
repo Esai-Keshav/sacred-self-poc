@@ -29,6 +29,8 @@ def format_when(created_at: str) -> str:
 def render_card(card: dict) -> None:
     """The whole card at once: hook, body and practise."""
     with st.container(border=True):
+        # Rows saved before perspectives existed have no key.
+        st.caption(config.PERSPECTIVES[card.get("perspective", "willingness")])
         st.markdown(f"**{card['hook']}**")
         st.write(card["expanded"])
         st.markdown(f"**{config.PRACTISE_LABEL}**")

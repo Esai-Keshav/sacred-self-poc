@@ -33,17 +33,24 @@ MODEL_NAME = "openai:gpt-6-luna"
 REASONING_EFFORT = "low"
 
 # --- Language guide: v1 = Master System Prompt, v2 = Core Language & Voice,
-# v4 = Spoken Language & Voice (from the Nidra transcripts) ---
-PROMPT_VERSION = "v4"
+# v4 = Spoken Language & Voice (from the Nidra transcripts),
+# v5 = High-energy Willingness voice (from client feedback) ---
+PROMPT_VERSION = "v5"
+# PROMPT_VERSION = "v4"
 # PROMPT_VERSION = "v3"
 # PROMPT_VERSION = "v2"
 # PROMPT_VERSION = "v1"
+
+# --- Perspectives: key (prompt file name and DB value) -> label. Order is display order. ---
+PERSPECTIVES = {"willingness": "Willingness", "love_joy": "Love & Joy"}
 
 # --- Card length (words) ---
 HOOK_MIN_WORDS = 20
 HOOK_MAX_WORDS = 30
 EXPANDED_MIN_WORDS = 60
-EXPANDED_MAX_WORDS = 70
+EXPANDED_MAX_WORDS = 90
+PRACTISE_MIN_WORDS = 70
+PRACTISE_MAX_WORDS = 90
 
 # --- History ---
 HISTORY_LIMIT = 50
@@ -72,6 +79,7 @@ FALLBACK_MESSAGE = "I can't help with it."
 ERROR_EMPTY_INPUT = "Please describe your situation first."
 ERROR_INPUT_TOO_LONG = "Please keep your message under {max} characters."
 ERROR_TIMEOUT = "This is taking longer than expected. Please try again."
+ERROR_PARTIAL = "One perspective could not be generated. Please try again."
 ERROR_SAVE = "Your card is shown, but it could not be saved."
 ERROR_HISTORY = "The history could not be loaded."
 ERROR_FEEDBACK = "Your feedback could not be saved. Please try again."
