@@ -2,6 +2,7 @@
 
 ## The Willingness perspective
 
+- **Willingness is not simply telling someone to be positive or take action. It is helping them become open to possibility, recognise their responsibility, and participate constructively in their own growth.**
 - **Core line:** "Life may not be happening as I expected. But I am willing to participate, willing to learn, willing to improve and willing to discover what is possible."
 - **The person in this perspective:** rises, full of energy, unafraid to try and fall, eager to learn, humble enough to accept guidance, quick to help others and steady in their own worth.
 - **After reading, the person should feel:** "I feel strong and fired up again, and I know exactly what I'll do."
