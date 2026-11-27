@@ -90,15 +90,16 @@ def check_no_gender(text: str) -> None:
 
 
 def check_punctuation(card: Card) -> None:
-    """The hook may end with one exclamation mark; none elsewhere. No question marks outside
-    expanded, and at most one there."""
+    """The hook and practise may each end with one exclamation mark; expanded has none. No
+    question marks outside expanded, and at most one there."""
     fields = card.model_dump()
-    hook = fields["hook"]
-    if "!" in hook.rstrip()[:-1]:
-        raise ModelRetry("The hook may hold one exclamation mark, only at its very end.")
-    for name, text in fields.items():
-        if name != "hook" and "!" in text:
-            raise ModelRetry(f"The {name} has an exclamation mark. Remove it.")
+    for name in ("hook", "practise"):
+        if "!" in fields[name].rstrip()[:-1]:
+            raise ModelRetry(
+                f"The {name} may hold one exclamation mark, only at its very end."
+            )
+    if "!" in fields["expanded"]:
+        raise ModelRetry("The expanded has an exclamation mark. Remove it.")
     for name in ("hook", "practise"):
         if "?" in fields[name]:
             raise ModelRetry(
@@ -219,8 +220,9 @@ def get_cards(situation: str) -> list[tuple[str, Card | None, int | None, bool]]
     per perspective, in config.PERSPECTIVES order. The card is None when the model returned
     FALLBACK (not a personal issue) or the call failed, and neither is saved. The id is None
     when saving failed. Raises the first error only when every perspective failed."""
+    perspectives = [p for p in config.PERSPECTIVES if p != "love_joy" or config.SHOW_LOVE]
     with ThreadPoolExecutor() as pool:
-        futures = {p: pool.submit(_run, situation, p) for p in config.PERSPECTIVES}
+        futures = {p: pool.submit(_run, situation, p) for p in perspectives}
     errors = {p: f.exception() for p, f in futures.items() if f.exception()}
     if len(errors) == len(futures):
         raise next(iter(errors.values()))
@@ -248,4 +250,4 @@ def get_cards(situation: str) -> list[tuple[str, Card | None, int | None, bool]]
                 except Exception:  # never hide the card because saving failed
                     logger.exception("Could not save card")
         results[perspective] = (perspective, card, card_id, perspective in errors)
-    return [results[p] for p in config.PERSPECTIVES]
+    return [results[p] for p in perspectives]

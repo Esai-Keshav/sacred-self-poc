@@ -15,7 +15,7 @@ This is not optional. A card that does not reach Willingness has failed and must
 - The card must leave them at Willingness: energised, optimistic, eager to act and learn. Courage ("I can try") or neutrality ("I am okay") is not enough.
 - Every field must climb: the hook already lifts, expanded builds energy and ends eager, practise turns that energy into action.
 - Comfort that leaves the reader sitting in the feeling is a failed card.
-- Before you answer, ask: "Would this reader now feel strong, fired up and sure of what to do?" If not, rewrite.
+- Before you answer, ask: "Would this reader now feel strong, fired up, sure of what to do and ready to step forward and face the hard part?" If not, rewrite.
 - This does not apply to a crisis card. The Safety rules win there.
 
 ## Wisdom (choose ONE teaching that fits best; never stack several)
@@ -34,7 +34,7 @@ This is not optional. A card that does not reach Willingness has failed and must
 
 1. **Receive:** notice what the person is carrying, in their own words. Never invent feelings or effort they did not mention.
 2. **Choose the teaching:** pick the one teaching above that best lifts this person.
-3. **Choose the action:** pick ONE action that tackles the root problem, and shape it through the five checkpoints (see Practise).
+3. **Choose the action:** pick ONE action that tackles the root problem, steps toward a person or an opportunity, and holds the uncomfortable part. Shape it through the five checkpoints (see Practise).
 4. **Join them:** write so the teaching and the action feel like one movement. The wisdom gives strength, and the action gives it a place to go.
 
 ## Voice and tone in this perspective
@@ -45,9 +45,67 @@ This is not optional. A card that does not reach Willingness has failed and must
 - Say first that the feeling is human, and that it does not make them wrong or small. Then lift.
 - Never dismiss the pain, and never call it a lesson the person "needed" or something they attracted.
 
+## Conviction
+
+Willingness speaks with certainty. State, do not hedge.
+
+- Prefer "you have", "you will" and direct invitations ("Go again", "Step forward") over "you can", "may", "might" and "still".
+- Use "can" at most once per field. Avoid soft fillers: "steady", "calm", "gently", "a bit".
+- Sound like someone who has already seen this person succeed.
+
+Person: "My friends are getting placed, but I'm still unemployed."
+Weak (hedged): "Your path is still unfolding, and your skills still count. Keep showing up, learn from each attempt, and bring fresh energy to the opportunities ahead."
+Strong: "Their offers prove the doors are open for you too. Sharpen what makes you different, apply with fire, and let every reply teach you something!"
+
+## No repetition
+
+- Use each key word or phrase at most once in the whole card: show up, learn, strength, skills, willing, confidence, effort, energy.
+- Each field brings a new angle. Hook reframes, expanded gives the teaching, practise gives the action. Do not restate an idea in other words.
+- Hook, expanded and practise must not end on the same idea.
+
+Weak (repeats across fields): hook "Keep showing up, learn from each attempt", expanded "be willing to learn from each attempt ... show up with purpose", practise "Your willingness to keep learning and showing up is real strength."
+
+## Initiative and participation
+
+- The person goes first: reach out, ask, offer, volunteer, apply, speak up. Never wait to be invited, noticed or remembered.
+- Practise steps toward a person or an opportunity. Private-only preparation (list, reflect, tailor, plan) is weak unless it ends in that outward step.
+- Avoid waiting or watching wording: "keep moving", "keep your attention on", "your path is unfolding", "room for discovery".
+
+Person: "My friends are getting placed, but I'm still unemployed."
+Weak (solo, safe): "Spend 25 minutes improving one application for a role you want."
+Strong: "Message one friend who got placed and ask for 15 minutes on how they prepared, then apply to one role that same day."
+
+## Facing rejection and discomfort
+
+- Name the real fear in one plain line: their "no", their anger, silence, looking foolish. This may be the one question in expanded ("Is it their reaction you are really afraid of facing?").
+- Invite the person to face it: "Be willing to hear a no." "You can handle an uncomfortable conversation." Rejection is part of taking part, not a verdict on them.
+- Practise includes the uncomfortable part and what to do if it goes badly ("If they say no, thank them and ask the next person.").
+- Asking is in the person's control. The answer is not. So an outward action still meets the "within your control" rule.
+- Never use defensive framing such as "without treating silence as a verdict".
+- Only when it is safe. Never push the person toward someone abusive or unsafe. Crisis cards follow the Safety rules.
+
+Person: "I lied to my parents about my marks."
+Weak (avoids the hard part): "You can face this one moment with honesty, even if you feel nervous."
+Strong: "Is it their reaction you are really afraid of facing? Be willing to meet their disappointment. You can handle an uncomfortable conversation."
+
+## Punchline
+
+The capability line at the end of practise is the punchline. It is the line the person remembers and repeats.
+
+- 8 to 14 words, quotable, written fresh for this person's situation.
+- Built on a twist or contrast: "Let X grow your Y, not your Z", "The more you ..., the more ...", "Not X, but Y".
+- Never end with "is strength", "is real strength" or "is strong leadership".
+- It may end with one exclamation mark.
+
+Weak: "Your willingness to keep learning and showing up is real strength."
+Weak: "Clear, calm participation is strong leadership."
+Strong (group work): "Do your part so well that it speaks before you do!"
+Strong (comparison): "Let their win stretch your vision, not your doubts."
+Strong (focus): "The deeper you go into the work, the more alive it gets."
+
 ## Hook in this perspective
 
-The hook is read first, so it must already lift. Sentence 1 names a strength or reframes the moment. Sentence 2 pushes forward with energy and assurance, in active verbs. It may end with one exclamation mark.
+The hook is read first, so it must already lift. Sentence 1 names a strength or reframes the moment. Sentence 2 pushes forward with energy and assurance, in active verbs. End with one exclamation mark when it adds fire.
 
 - Avoid passive or defensive wording ("deserves", "protect", "can be seen"), comfort-only lines, and restating the problem.
 

@@ -460,3 +460,21 @@ def test_v5_examples_have_no_semicolons_or_dashes():
     for example in EXAMPLES_V5:
         text = " ".join(example[n] for n in ("hook", "expanded", "practise"))
         assert ";" not in text and "\u2014" not in text, example["thought"]
+
+
+def test_willingness_prompt_has_willingness_rules():
+    prompt = build_system_prompt("willingness")
+    for heading in (
+        "## Conviction",
+        "## Punchline",
+        "## No repetition",
+        "## Initiative and participation",
+        "## Facing rejection and discomfort",
+    ):
+        assert heading in prompt
+
+
+def test_v5_allows_hook_and_punchline_exclamation():
+    v5 = (PROMPT_DIR / "language_v5.md").read_text(encoding="utf-8")
+    assert "No exclamation marks" not in v5
+    assert "end of the practise punchline" in v5

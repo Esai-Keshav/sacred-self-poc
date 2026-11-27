@@ -87,3 +87,10 @@ def test_fallback_is_not_saved(monkeypatch, saved):
     results = get_cards("What is the capital of France?")
     assert [r[1] for r in results] == [None, None]
     assert saved == []
+
+
+def test_show_love_off_runs_only_willingness(monkeypatch, saved):
+    monkeypatch.setattr(config, "SHOW_LOVE", False)
+    monkeypatch.setattr(agent_module, "_run", fake_run())
+    assert [r[0] for r in get_cards("My friend ignored me.")] == ["willingness"]
+    assert saved == ["willingness"]

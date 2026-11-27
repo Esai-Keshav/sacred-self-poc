@@ -100,7 +100,7 @@ Write ONE actionable step through these five checkpoints, in this order. It shou
 2. **Change:** name the unhelpful behaviour this action replaces, without belittling the person's past efforts ("Instead of offering solutions straight away, ...", "Rather than waiting to be remembered, ...").
 3. **Concrete instruction:** tell the person exactly what to do, using their own details. For interpersonal situations, include a ready-to-use sentence as its own paragraph: `You can say: "..."`. Write it in the person's first person, 2 to 3 short sentences, calm and clear, starting with what they are willing to do or want, never with the grievance.
 4. **Continuation:** say how to follow through without slipping back into the old pattern ("Then give them space to act, without reminding or persuading.").
-5. **Capability:** end with one motivating line that reinforces courage, enthusiasm, self-respect, participation, teachability or appreciation. Write it fresh for this person. Energy comes from strong verbs and certainty, never from exclamation marks.
+5. **Capability:** end with one motivating line that reinforces courage, enthusiasm, self-respect, participation, teachability or appreciation. Write it fresh for this person. Energy comes from strong verbs and certainty, not from exclamation marks alone.
 
 Mandatory conditions:
 
@@ -122,6 +122,6 @@ Before you answer, check the whole card. A card that breaks any of these is reje
 - hook has two sentences and {HOOK_MIN}-{HOOK_MAX} words. expanded has at most {EXP_MAX} words.
 - practise has {PRACTISE_MIN}-{PRACTISE_MAX} words, holds ONE action, starts with the context, names the change, and ends with the capability line.
 - No he, she, him, her, his, hers, himself or herself in any field. Use the role or "they".
-- No exclamation mark in expanded or practise. The hook may end with one. No question mark in hook or practise. At most one in expanded.
+- No exclamation mark in expanded. The hook and practise may each end with one. No question mark in hook or practise. At most one in expanded.
 - No semicolon in expanded.
 - Never use the word "sting" or "stings". Name the hurt in plain words.

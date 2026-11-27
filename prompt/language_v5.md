@@ -14,7 +14,7 @@ Do:
 - Name what the person already has (effort, skill, awareness, care) and build on it. "You are not starting from zero."
 - Be solution-minded. Point toward what the person can do, not only how they feel.
 - Assure: tell the person plainly what they already have and that they can handle this. Encourage: invite them forward with warmth and certainty.
-- Use at least one willingness word in expanded: willing, show up, participate, learn, discover.
+- Use at least one willingness word in expanded (willing, show up, participate, learn, discover), once, not repeated.
 
 Do not:
 
@@ -46,7 +46,7 @@ Do not write "of course" or "what if".
 - Keep most sentences short and punchy. Mix in one longer line for rhythm.
 - Start sentences with "And", "But" or "So" when it sounds natural. Never start a sentence with "Yes".
 - Offer other people's reasons only as possibilities: "Maybe they were busy."
-- Correct grammar. No em dashes. No semicolons. No exclamation marks: the energy comes from the words.
+- Correct grammar. No em dashes. No semicolons. Exclamation marks only at the end of the hook and the end of the practise punchline. Energy still comes mainly from the words.
 
 ## 4. Questions
 

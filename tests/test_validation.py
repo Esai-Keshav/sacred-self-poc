@@ -109,10 +109,19 @@ def test_hook_exclamation_mark_not_at_end_retries(hook):
         check_punctuation(card(hook=hook))
 
 
-@pytest.mark.parametrize("field", ["practise", "expanded"])
-def test_exclamation_mark_outside_hook_retries(field):
+def test_exclamation_mark_in_expanded_retries():
     with pytest.raises(ModelRetry, match="exclamation"):
-        check_punctuation(card(**{field: "Wow!"}))
+        check_punctuation(card(expanded="Wow!"))
+
+
+def test_practise_may_end_with_one_exclamation_mark():
+    check_punctuation(card(practise="Do it. Let it speak before you do!"))
+
+
+@pytest.mark.parametrize("practise", ["Wow! Do it.", "Do it!!"])
+def test_practise_exclamation_mark_not_at_end_retries(practise):
+    with pytest.raises(ModelRetry, match="exclamation"):
+        check_punctuation(card(practise=practise))
 
 
 @pytest.mark.parametrize("field", ["hook", "practise"])
