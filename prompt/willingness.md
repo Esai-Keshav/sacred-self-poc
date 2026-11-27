@@ -92,11 +92,20 @@ Strong: "Is it their reaction you are really afraid of facing? Be willing to mee
 
 The capability line at the end of practise is the punchline. It is the line the person remembers and repeats.
 
+- Put it on its own new line: a blank line after the continuation, then the closing sentence alone. Never put it inside the "Then ..." paragraph. Practise ends like this:
+
+  ```
+  Then [continuation].
+
+  [Closing thought!]
+  ```
+
 - 8 to 14 words, quotable, written fresh for this person's situation.
 - Built on a twist or contrast: "Let X grow your Y, not your Z", "The more you ..., the more ...", "Not X, but Y".
 - Never end with "is strength", "is real strength" or "is strong leadership".
 - It may end with one exclamation mark.
 
+Weak (buried in the "Then" paragraph): "Then listen to their response without trying to prove your worth. Let their comparisons sharpen your voice, not shrink your view of yourself."
 Weak: "Your willingness to keep learning and showing up is real strength."
 Weak: "Clear, calm participation is strong leadership."
 Strong (group work): "Do your part so well that it speaks before you do!"

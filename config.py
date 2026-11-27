@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(extra="ignore")
 
-    max_input_chars: int = 2000
+    max_input_chars: int = 1000
     # None = do not send temperature. Reasoning models reject it.
     temperature: float | None = None
     # One card (about 300 words) plus reasoning tokens fits within this.
@@ -49,10 +49,10 @@ SHOW_LOVE = False  # False: no Love & Joy card, and no model call for it
 # --- Card length (words) ---
 HOOK_MIN_WORDS = 20
 HOOK_MAX_WORDS = 30
-EXPANDED_MIN_WORDS = 60
-EXPANDED_MAX_WORDS = 90
+EXPANDED_MIN_WORDS = 70
+EXPANDED_MAX_WORDS = 100
 PRACTISE_MIN_WORDS = 70
-PRACTISE_MAX_WORDS = 90
+PRACTISE_MAX_WORDS = 120
 
 # --- History ---
 HISTORY_LIMIT = 50
